@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript"
+    src="https://www.maths.nottingham.ac.uk/plp/pmadw/LaTeXMathML.js">
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+    body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    }
+
+    figure {
+    border: 1px #cccccc solid;
+    padding: 4px;
+    margin: auto;
+    text-align: center;
+    }
+
+    .row {
+    display: flex;
+    }
+
+    .column {
+    flex: 50%;
+    padding: 5px;
+    }
+
+    figcaption {
+    background-color: black;
+    color: white;
+    font-style: italic;
+    padding: 2px;
+    text-align: center;
+    }
+
+    .top-container {
+    padding: 100px;
+    background-image:url('imgs/mafia.jpeg');
+    /* background-repeat: no-repeat; */
+    background-position: center;
+    background-size: 25%;
+    position: relative;
+    object-fit: cover;
+    width: auto;
+    height: 150px;
+    }
+
+    .title {
+    padding: 200px;
+    text-align: center;
+    color: black;
+    }
+
+    .topnav {
+    overflow: hidden;
+    background-color: #8B0000;
+    }
+
+    .topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+    }
+
+    .topnav a:hover {
+    background-color: #ddd;
+    color: black;
+    }
+
+    .content {
+    padding: 16px;
+    }
+
+    .sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    }
+
+    .sticky + .content {
+    padding-top: 102px;
+    }
+
+    #game-log {
+      height: 300px;
+      width: 500px;
+      border: 1px solid black;
+      overflow: auto;
+    }
+    </style>
+    </head>
+<body>
+
+<div class="top-container">
+</div>
+
+<div class="topnav" id="myHeader">
+        <a href="#abstract">Abstract</a>
+        <a href="#introduction">Introduction</a>
+        <a href="#preliminaries">Preliminaries</a>
+        <a href="#related_work">Related Work</a>
+        <a href="#results_discussion:">Results and Discussion</a>
+        <a href="#conclusion">Conclusion</a>
+        <a href="#references">References</a>
+        <a href="https://github.com/BlueVelvetSackOfGoldPotatoes/Lamas" target=”_blank”>GitHub</a>
+</div>
+<div class="title" >
+    <h3>Mafia Game</h3>
+    <p>Group 4: s4721810, s3450295, and s3486427.</p>
+    </div>
+<div class="content">
+  <a id="abstract"></a>
+  <h2>Abstract</h2>
+    <p>The Mafia game, also known as Werewolf, is a popular social deduction game that engenders a compelling mix of strategic deception, persuasive argumentation, and probabilistic reasoning. Despite its simple rules, the game exhibits rich strategic depth and complexity due to the hidden information and the need for players to infer other players' identities based on their actions and statements. This paper presents a formal model and logical framework to analyze and understand the underlying strategies in the Mafia game.</p>
+    <p>In the first part, we introduce the game and its mechanics, explaining the roles, rules, and the cycle of day and night phases. We highlight the objectives of the two factions: the innocent villagers and the deceptive mafiosi, outlining the fundamental dichotomy between hidden and public information in the game.</p>
+    <p>We then proceed to construct a Kripke model representing the various game states, defining the epistemic states and transitions that correspond to players gaining information throughout the game. For single mafiosi and dual mafiosi scenarios, we propose distinct model structures, capturing the different strategic nuances in each setting.</p>
+    <p>Next, we enumerate four essential types of knowledge that players can learn during the game, from witnessing specific actions to interpreting announcements made by other players. We illustrate how these knowledge types can shape the strategies players adopt.</p>
+    <p>Following this, we introduce a set of reasoning rules that players may use to deduce the hidden roles based on observable actions and shared information. These rules, grounded in modal logic, provide a formal methodology for players to evaluate suspicions and make decisions.</p>
+    <p>This study offers valuable insights into the strategic dynamics of the Mafia game, shedding light on how logical reasoning and information asymmetry drive the intrigue and suspense that define this classic social deduction game. The proposed logical framework and reasoning rules could inform the development of AI agents capable of playing such games, further enhancing our understanding of these complex, interactive multi-agent systems.</p>
+    <!-- <figure>
+      <img src="imgs/" alt="An image title." style="max-width: 100%; height: auto; width: 800px">
+      <figcaption>Fig.1 - First image.</figcaption>
+    </figure> -->
+
+  <a id="introduction"></a>
+  <h2>Introduction</h2>
+    <p>Welcome to the thrilling and mysterious world of the Mafia game! This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. Here's a brief introduction before we delve into the logic behind it.</p>
+
+    <p>The game is played with a group of people, traditionally ranging from six to twenty players. This group is secretly divided into two factions: the innocent villagers and the cunning mafiosi. The villagers do not know who the mafiosi are, but the mafiosi know each other. The objective of the game is different for each group. The villagers aim to identify and eliminate all the mafiosi, while the mafiosi aim to reach numerical parity with the villagers, therefore gaining control of the village.</p>
+
+    <p>The game progresses in alternating cycles of 'night' and 'day'. During the night, the mafiosi conspire to 'eliminate' one villager, while the villagers are 'asleep' and unaware of these happenings. Come day, the villagers discover who has been 'eliminated' during the night, and then engage in discussions, accusations, and debates to figure out who amongst them could be a mafioso. This often culminates in a vote, where the suspected mafioso is 'lynched' if the majority agrees.</p>
+
+    <p>Throughout the game, players must use their observation skills, strategic thinking, and persuasive abilities to convince others of their innocence or to cast suspicion on others. The game involves much bluffing, suspicion, interrogation, and strategic voting.</p>
+
+    <p>In the following sections, we will unravel the fascinating logic behind the Mafia game. We will illustrate how the seemingly chaotic discussions and accusations can be analyzed using the principles of deductive reasoning, probability, and game theory. You will discover that beneath the veil of secrecy, lies, and accusations, the game of Mafia is a compelling test of logical thinking and strategy. So, let's delve deeper into the intriguing world of the Mafia game!</p>
+    <!-- <ul>
+    <li><p>A set of m agents <span class="math inline">A = \{a_1, a_2, ..., a_m\}</span></p></li>
+    <li><p>A set of n rooms <span class="math inline">X = \{r_1, r_2, ..., r_n\}</span></p></li>
+    <li><p>A set of timesteps <span class="math inline">Y = \mathbb{N}</span></p></li>
+    <li><p>A set of predicates <span class="math inline">P = \{Imp_1, Imp_2, ..., Imp_m \}</span></p></li>
+    </ul> -->
+    <h3>Kripke Model: One Mafiosi </h3>
+    <p>The Kripke model for the case of one mafiosi is defined as follows:</p>
+    <p><span class="math inline">M^1 ::= &lt; S^1, \pi^1, R_1^1, ..., R_m^1 &gt;</span>, with:</p>
+    <ul>
+      <li><p><span class="math inline">S^1 = \{s_i | a_i \in A\}</span></p></li>
+      <li><p><span class="math inline">\pi^1(s_i)(Maf_j) = t</span> iff <span class="math inline">i = j</span></p></li>
+      <li><p><span class="math inline">R_b^1 = \{(s_i, s_j) | s_i \in S^1 \land s_j \in S^1 \land i &ne; b \land j &ne; b\} \cup \{(s_i, s_j) | s_i \in S^1 \land i = j\}</span> for all <span class="math inline">b</span> such that <span class="math inline">a_b \in A</span>. <br/> In other words: The relations for an agent are the pairs of worlds in which the number corresponding to the agent does not appear, unioned with the set of reflexive relations.</p></li>
+    </ul>
+
+    <h3>Kripke Model: Two Mafiosi </h3>
+    <p>The Kripke model for the case of two mafiosi is defined as follows:</p>
+    <p><span class="math inline">M^2 ::= &lt; S^2, \pi^2, R_1^2, ..., R_m^2 &gt;</span>, with:</p>
+    <ul>
+      <li><p><span class="math inline">S^2 = \{s_ij | a_i, a_j \in A \land i &ne; j\}</span></p></li>
+      <li><p><span class="math inline">\pi^2(s_ij)(Maf_k) = t</span> iff <span class="math inline">i = k</span> or <span class="math inline">j = k</span></p></li>
+      <li><p><span class="math inline">R_b^2 = \{(s_ij, s_kl) | s_ij, s_kl \in S^2 \land i &ne; b \land j &ne; b \land k &ne; b \land l &ne; b\} \cup \{(s_ij, s_kl) | s_ij, s_kl \in S^2 \land i = k \land j = l\}</span> for all <span class="math inline">b</span> such that <span class="math inline">a_b \in A</span>. <br/> In other words: The relations for an agent are the pairs of worlds in which the numbers corresponding to the agent do not appear, unioned with the set of reflexive relations.</p></li>
+    </ul>
+
+    <h3>Kripke Model: Number of worlds and relations</h3>
+    <p>As aforementioned, our implementation of the Mafia game supports simulations with either one or two mafiosi. The size of the Kripke model depends on this, as each world represents a state where one agent or pair of agents are the mafiosi. For one mafioso, the model has the same number of worlds as there are agents, where each world represents a state where one agent is the mafioso. Each world is connected to each world, meaning there are <span class="math inline">10*10 =100</span> relations. </p>
+    <p>For two mafiosi, the size of the model is the number of agents times the number of agents minus one, divided by two. In the case of ten agents, this means that there are <span class="math inline">(10*9)/2=45</span> possible worlds. This way, all possible combinations of agents have a single world. This means that <span class="math inline">w_1_2</span> does exist but <span class="math inline">w_2_1</span> does not. As for the relations, for each agent, each world in which that agent is not involved (45-9=36) is connected to all other worlds minus itself (35). Additionally, each world has a reflexive relation to itself. There are therefore <span class="math inline">(36*35)+45=1305</span> relations per agents, so <span class="math inline">10*1305=13050</span> relations in total.</p>
+
+    <!-- <figure>
+      <img src="site_images/KMEnd.png" alt="Kripke Model after a run" style="max-width: 100%; height: auto; width: 800px">
+      <figcaption>Fig.3 - The full kripke model after a random ten agent game with two mafiosi.</figcaption>
+    </figure> -->
+    <p>There are four basic types of knowledge that can be learned in the Mafia game. Here, a<sub>1</sub> and a<sub>2</sub> $\in A$, x<sub>1</sub> and x<sub>2</sub>$\in X$ and y $\in Y$ <a href="#formal_model">(see the 'formal model' section)</a>:</p>
+    <ul>
+      <li>Whether an agent performed an action. For example, a<sub>1</sub> performed an action in location x<sub>1</sub> at time y.</li>
+      <li>Whether a mafioso killed a villager. For example, a<sub>1</sub> was killed by a<sub>2</sub> in location x<sub>1</sub> at time y.</li>
+      <li>Whether an agent is dead or alive. For example, a<sub>1</sub> is alive at time y.</li>
+      <li>Whether an agent is a mafioso or a villager. For example, a<sub>1</sub> is a mafioso.</li>
+    </ul>
+    <p>For the first two types of knowledge to be gained, it is important that a villager a<sub>1</sub> is in the same location as agent a<sub>2</sub> (where a<sub>1</sub> <span>&#8800;</span> a<sub>2</sub>) at the same time. The last knowledge type about whether an agent is a mafioso or not can be derived from the first three knowledge types as described in the next sections.</p>
+
+    <h3>Reasoning Rules</h3>
+    <p>There are several rules a villager (here a<sub>1</sub>, a<sub>2</sub> and a<sub>3</sub>) can use to deduct this last type of knowledge about who the mafiosi (here a<sub>4</sub>) are. They are listed as follows:</p>
+    <ul>
+        <li>Catching the mafioso in the act: ((a<sub>1</sub> $\land$ a<sub>4</sub>) in location x<sub>1</sub> at step y $\land$ a<sub>4</sub> kills a<sub>2</sub>) $\rightarrow$ K<sub>1</sub> Maf<sub>4</sub></li>
+        <li>Clearing a villager by seeing their action: ((a<sub>1</sub> $\land$ a<sub>2</sub>) in location x<sub>1</sub> at step y $\land$ a<sub>2</sub> performs an action in location x<sub>1</sub> at step y) $\rightarrow$ K<sub>1</sub> $\neg$Maf<sub>2</sub>.</li>
+        <li>Dead agents must be villagers: a<sub>1</sub> is dead $\rightarrow$ C $\neg$Maf<sub>1</sub></li>
+        <li><p>Trust friendly announcements. If $a_1 \in A$ knows that $a_2 \in A$ is not a mafioso, and $a_2$ shares information, then $a_1$ takes that information as factual. This is equivalent to the announcement: <br/> $[k_i (\neg Maf_j) \land k_i k_j \psi] k_i \psi$ for all $i, j$ such that $a_i \in A$ and $a_j \in A$.</p></li>
+    </ul>
+
+  <a id="preliminaries"></a>
+  <h2>Preliminaries</h2>
+
+
+  <a id="related_work"></a>
+  <h2>Related Work</h2>
+
+
+  <a id="results_discussion"></a>
+  <h2>Results and Discussion</h2>
+ 
+  <a id="conclusion"></a>
+  <h2>Conclusion</h2>
+
+  <a id="related_work"></a>
+  <h2>Related Work</h2>
+
+
+  <h3 id="references" class="unnumbered">References</h3>
+  <div id="refs" class="references">
+
+  <!-- <div id="ref-partition">
+  <p>Reid, John. 2007. “Equivalence Partition (Python Recipe).” <a href="https://code.activestate.com/recipes/499354-equivalence-partition/">https://code.activestate.com/recipes/499354-equivalence-partition/</a>.</p>
+  </div> -->
+  </div>
+
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["jsMath2jax.js"]
+    });
+  </script>
+
+  <script
+    src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+  </script>
+
+  <script>
+      window.onscroll = function() {myFunction()};
+
+      var header = document.getElementById("myHeader");
+      var sticky = header.offsetTop;
+
+      function myFunction() {
+        if (window.pageYOffset > sticky) {
+          header.classList.add("sticky");
+        } else {
+          header.classList.remove("sticky");
+        }
+      }
+
+  function offsetAnchor() {
+      if(location.hash.length !== 0) {
+          window.scrollTo(window.scrollX, window.scrollY);
+      }
+  }
+  window.addEventListener("hashchange", offsetAnchor);
+  window.setTimeout(offsetAnchor, 1);
+
+
+  </script>
+
+<!-- <h1>Simple Mafia Game Simulation</h1>
+<button id="start-btn">Start Game</button>
+<h2>Game Log:</h2>
+<div id="game-log"></div>
+
+<script>
+  const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
+  let mafiosi = '';
+
+  function log(message) {
+    const gameLog = document.getElementById('game-log');
+    gameLog.innerHTML += message + '<br />';
+    gameLog.scrollTop = gameLog.scrollHeight;
+  }
+
+  function startGame() {
+    mafiosi = players[Math.floor(Math.random() * players.length)];
+    log(`Game Start. Players: ${players.join(', ')}`);
+    log(`Mafioso chosen (hidden): ${mafiosi}`);
+  }
+
+  function nightPhase() {
+    const killed = players[Math.floor(Math.random() * players.length)];
+    log(`Night Phase: ${killed} was killed.`);
+    const index = players.indexOf(killed);
+    if (index > -1) {
+      players.splice(index, 1);
+    }
+  }
+
+  function dayPhase() {
+    log(`Day Phase: Living Players: ${players.join(', ')}`);
+    if (players.includes(mafiosi)) {
+      log('The Mafia is still among us...');
+      nightPhase();
+    } else {
+      log('The villagers have won, the Mafia was eliminated!');
+    }
+  }
+
+  document.getElementById('start-btn').addEventListener('click', function() {
+    startGame();
+    nightPhase();
+    dayPhase();
+  }); -->
+</script>
+
+</body>
+</html>
