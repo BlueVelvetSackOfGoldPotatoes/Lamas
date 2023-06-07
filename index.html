@@ -104,7 +104,7 @@
 <div class="topnav" id="myHeader">
         <a href="#abstract">Abstract</a>
         <a href="#introduction">Introduction</a>
-        <a href="#preliminaries">Preliminaries</a>
+        <a href="#kripke_model">Kripke Model</a>
         <a href="#related_work">Related Work</a>
         <a href="#results_discussion:">Results and Discussion</a>
         <a href="#conclusion">Conclusion</a>
@@ -146,7 +146,7 @@
     <li><p>A set of timesteps <span class="math inline">Y = \mathbb{N}</span></p></li>
     <li><p>A set of predicates <span class="math inline">P = \{Imp_1, Imp_2, ..., Imp_m \}</span></p></li>
     </ul> -->
-    <h3>Kripke Model: One Mafiosi </h3>
+    <!-- <h3>Kripke Model: One Mafiosi </h3>
     <p>The Kripke model for the case of one mafiosi is defined as follows:</p>
     <p><span class="math inline">M^1 ::= &lt; S^1, \pi^1, R_1^1, ..., R_m^1 &gt;</span>, with:</p>
     <ul>
@@ -168,10 +168,6 @@
     <p>As aforementioned, our implementation of the Mafia game supports simulations with either one or two mafiosi. The size of the Kripke model depends on this, as each world represents a state where one agent or pair of agents are the mafiosi. For one mafioso, the model has the same number of worlds as there are agents, where each world represents a state where one agent is the mafioso. Each world is connected to each world, meaning there are <span class="math inline">10*10 =100</span> relations. </p>
     <p>For two mafiosi, the size of the model is the number of agents times the number of agents minus one, divided by two. In the case of ten agents, this means that there are <span class="math inline">(10*9)/2=45</span> possible worlds. This way, all possible combinations of agents have a single world. This means that <span class="math inline">w_1_2</span> does exist but <span class="math inline">w_2_1</span> does not. As for the relations, for each agent, each world in which that agent is not involved (45-9=36) is connected to all other worlds minus itself (35). Additionally, each world has a reflexive relation to itself. There are therefore <span class="math inline">(36*35)+45=1305</span> relations per agents, so <span class="math inline">10*1305=13050</span> relations in total.</p>
 
-    <!-- <figure>
-      <img src="site_images/KMEnd.png" alt="Kripke Model after a run" style="max-width: 100%; height: auto; width: 800px">
-      <figcaption>Fig.3 - The full kripke model after a random ten agent game with two mafiosi.</figcaption>
-    </figure> -->
     <p>There are four basic types of knowledge that can be learned in the Mafia game. Here, a<sub>1</sub> and a<sub>2</sub> $\in A$, x<sub>1</sub> and x<sub>2</sub>$\in X$ and y $\in Y$ <a href="#formal_model">(see the 'formal model' section)</a>:</p>
     <ul>
       <li>Whether an agent performed an action. For example, a<sub>1</sub> performed an action in location x<sub>1</sub> at time y.</li>
@@ -188,25 +184,90 @@
         <li>Clearing a villager by seeing their action: ((a<sub>1</sub> $\land$ a<sub>2</sub>) in location x<sub>1</sub> at step y $\land$ a<sub>2</sub> performs an action in location x<sub>1</sub> at step y) $\rightarrow$ K<sub>1</sub> $\neg$Maf<sub>2</sub>.</li>
         <li>Dead agents must be villagers: a<sub>1</sub> is dead $\rightarrow$ C $\neg$Maf<sub>1</sub></li>
         <li><p>Trust friendly announcements. If $a_1 \in A$ knows that $a_2 \in A$ is not a mafioso, and $a_2$ shares information, then $a_1$ takes that information as factual. This is equivalent to the announcement: <br/> $[k_i (\neg Maf_j) \land k_i k_j \psi] k_i \psi$ for all $i, j$ such that $a_i \in A$ and $a_j \in A$.</p></li>
+    </ul> -->
+
+    <h3>Roles</h2>
+    <ul>
+      <li>Villagers: Villagers are the majority faction in the game. They have no special abilities and aim to identify and eliminate the Mafiosi.</li>
+      <li>Mafiosi: Mafiosi are the minority faction in the game. They aim to outnumber and eliminate the Villagers without revealing their true identities.</li>
+      <li>Detective: The Detective is a special role on the Villagers' side. They have the ability to investigate the role of a player during the night phase and gather information about their allegiance.</li>
+      <li>Doctor: The Doctor is another special role on the Villagers' side. They have the ability to protect a player from being eliminated during the night phase.</li>
+    </ul>
+    
+    <h2>Kripke Model Representation</h2>
+    <p>To formalize the game using Kripke models, we define the following elements:</p>
+    
+    <h3>States</h3>
+    <p>A state represents a possible configuration of the game, including the roles assigned to players and their current knowledge.</p>
+    <p>Let S be the set of states, and each state s ∈ S is represented as a tuple of player-role assignments and knowledge mappings. For example, s = (p1 → R1, p2 → R2, ..., pn → Rn, K1, K2, ..., Kn), where p1, p2, ..., pn are the players, R1, R2, ..., Rn are their respective roles, and K1, K2, ..., Kn represent the knowledge mappings.</p>
+    
+    <h3>Propositions</h3>
+    <p>Propositions represent the possible statements or facts about the game. We define the following propositions:</p>
+    <ul>
+      <li>Role propositions: For each player p, we have propositions Rp for the respective role assigned to player p.</li>
+      <li>Knowledge propositions: For each player p and each player q, we have propositions Kpq for player p's knowledge about the role of player q.</li>
+      <li>Alive propositions: For each player p, we have propositions Ap representing whether player p is alive or eliminated.</li>
+    </ul>
+    
+    <h3>Relations</h3>
+    <p>We define the following relations for each player:</p>
+    <ul>
+      <li>Role relations: Rp ⊆ S × S such that Rp = {(s, t) ∈ S × S | s(p) = t(p)}, meaning that the assigned role of player p remains the same between states s and t.</li>
+      <li>Knowledge relations: Kp ⊆ S × S such that Kp = {(s, t) ∈ S × S | s(Kp) ⊆ t(Kp)}, meaning that player p's knowledge is preserved or expanded between states s and t.</li>
+      <li>Alive relations: Ap ⊆ S × S such that Ap = {(s, t) ∈ S × S | s(Ap) = t(Ap)}, meaning that player p's status (alive or eliminated) remains the same between states s and t.</li>
     </ul>
 
-  <a id="preliminaries"></a>
-  <h2>Preliminaries</h2>
+    <h3>Transitions</h3>
+    <p>Transitions between states occur based on the actions taken by players during the game. The transitions are defined as the union of role, knowledge, and alive relations for all players. Formally, R = R1 ∪ R2 ∪ ... ∪ Rn, K = K1 ∪ K2 ∪ ... ∪ Kn, and A = A1 ∪ A2 ∪ ... ∪ An.</p>
+    
+    <h3>Public Announcements</h3>
+    <p>Public announcements occur at the end of each phase and provide common knowledge to all players. These announcements may include the outcomes of investigations, eliminations, or protective actions taken by the Detective or Doctor.</p>
+    <p>Based on the public announcements, players update their knowledge mappings, and the relations Kp are adjusted accordingly.</p>
+    
+    <h2>Gameplay and Strategies</h2>
+    <p>The gameplay of Mafia involves alternating day and night phases, with players performing different actions based on their roles. During the day, players discuss and deliberate to identify potential Mafiosi and decide on a player to eliminate by voting. During the night, players with special roles take actions privately.</p>
+    <p>Players can employ different strategies and logical reasoning to deduce the roles of other players and make informed decisions. The Detective can investigate players to gain information about their roles, while the Doctor can protect players who are likely targets of the Mafiosi.</p>
+    <p>Throughout the game, the Kripke model is updated based on the actions and public announcements, allowing players to refine their knowledge and make more accurate deductions.</p>
+    
+    <h3>Game Mechanics</h3>
+    <ul>
+      <li>Day Phase:
+        <ul>
+          <li>Players engage in open discussion to gather information and form suspicions.</li>
+          <li>A vote is conducted to eliminate a player who is suspected of being a Mafioso.</li>
+          <li>If a majority vote is reached, the player with the most votes is eliminated. If there is a tie, no elimination occurs.</li>
+          <li>The Kripke model is updated based on the outcome of the vote and public knowledge.</li>
+        </ul>
+      </li>
+      <li>Night Phase:
+        <ul>
+          <li>Special roles, such as the Detective and Doctor, take their respective actions privately.</li>
+          <li>The Detective can choose a player to investigate, and the result is announced publicly.</li>
+          <li>The Doctor can choose a player to protect, reducing the chances of that player being eliminated by the Mafiosi.</li>
+          <li>The Kripke model is updated based on the actions and public announcements during the night phase.</li>
+        </ul>
+      </li>
+      <li>Elimination and Win Conditions:
+        <ul>
+          <li>The game continues with alternating day and night phases until one faction achieves their win condition.</li>
+          <li>Villagers win if all Mafiosi are eliminated.</li>
+          <li>Mafiosi win if their numbers equal or exceed the number of Villagers.</li>
+          <li>The Kripke model is constantly updated, and players make deductions based on their knowledge to identify and eliminate the opposing faction.</li>
+        </ul>
+      </li>
+    </ul>
 
+  <a id="kripke_model"></a>
+  <h2>Preliminaries</h2>
 
   <a id="related_work"></a>
   <h2>Related Work</h2>
-
 
   <a id="results_discussion"></a>
   <h2>Results and Discussion</h2>
  
   <a id="conclusion"></a>
   <h2>Conclusion</h2>
-
-  <a id="related_work"></a>
-  <h2>Related Work</h2>
-
 
   <h3 id="references" class="unnumbered">References</h3>
   <div id="refs" class="references">

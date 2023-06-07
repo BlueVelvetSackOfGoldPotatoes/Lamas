@@ -1,0 +1,23 @@
+Experiment with what happens if votes are done simultaneously and what happens if votes are done serially.
+
+First mafiosi kills;
+Then doctor revives;
+Then the detective asks a player if they are a mafiosi or not;
+
+Knowledge that can be encoded:
+    Villagers know that they themselves are not mafiosi;
+    
+    TRUSTWORTHY public announcement:
+        Doctor announcement - point at a villager during the night, they don't get killed.
+
+        Detective announcement - can elliminate Mafia members
+
+
+mafia strategically vote for other mafia when a majority has voted for a player?
+Doctor can announce they saved  a player
+
+Narrator announces
+
+If detective gets killed villagers can deduce that the previously voted player was mafiosi
+
+If the detective is killed, it is common knowledge that the people he voted on are in the mafia
