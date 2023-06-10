@@ -6,6 +6,12 @@ name = "pypi"
 [packages]
 networkx = "*"
 matplotlib = "*"
+install = "*"
+pyqt5 = "*"
+pyqtwebengine = "*"
+pyqt5-sip = "*"
+pyvis = "*"
+jinja2 = "*"
 
 [dev-packages]
 
