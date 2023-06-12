@@ -1,26 +1,26 @@
 import random
 
-from mafia_players import Mafioso, Roles, Villager, Doctor
+from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
 
 
 class MafiaGame:
-    def __init__(self, villagers=10, mafiosi=3, doctors=1):
+    def __init__(self, villagers=10, mafiosi=3, doctors=1, informants=1):
         self.players = []
-        for itr in range(mafiosi):
-            self.players.append(Mafioso())
-            self.players[-1].name = "Mafioso " + str(itr)
-        for itr in range(villagers):
-            self.players.append(Villager())
-            self.players[-1].name = "Villager " + str(itr)
-        for itr in range(doctors):
-            self.players.append(Doctor())
-            self.players[-1].name = "Doctor " + str(itr)
+        self.addPlayers(mafiosi, Mafioso)
+        self.addPlayers(villagers, Villager)
+        self.addPlayers(doctors, Doctor)
+        self.addPlayers(informants, Informant)
         self.alivePlayers = self.players
         self.deadPlayers = []
         for player in self.players:
             player.alivePlayers = self.alivePlayers
             player.initializeBeliefs()
             player.accusations = {player.name: 0 for player in self.players if player.role.name == 'MAFIOSO'}
+
+    def addPlayers(self, count, Role):
+        for itr in range(count):
+            self.players.append(Role())
+            self.players[-1].name = f"{self.players[-1].role.name.capitalize()} {itr}"
 
     def voteVillager(self,  mafia_strategy='random', votes=None):
         # Night phase
@@ -50,7 +50,7 @@ class MafiaGame:
         mafiosoCount = 0
         villagerCount = 0
         for player in self.alivePlayers:
-            if player.role == Roles.MAFIOSO:
+            if isinstance(player, Mafioso):
                 mafiosoCount += 1
             else:
                 villagerCount += 1

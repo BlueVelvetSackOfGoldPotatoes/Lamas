@@ -11,15 +11,17 @@ from mafia_model import MafiaGame
 
 
 class MainWindow(tk.Tk):
-    def __init__(self, villagers=10, mafiosi=2, doctors=1, mafia_strategy='enemy'):
+    def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
         super().__init__()
         self.villagers = villagers
         self.mafiosi = mafiosi
         self.doctors = doctors
+        self.informants = informants
         self.mafia_strategy = mafia_strategy
         self.game = None
         self.model = None
         self.votes = None
+        self.totalPlayers = 0
 
         self.geometry("800x600")
         self.title("Mafia Game")
@@ -43,6 +45,7 @@ class MainWindow(tk.Tk):
 
     def start_game(self):
         self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors)
+        self.totalPlayers = len(self.game.players)
         self.model = KripkeModel(self.game)
         self.playMafia()
 
@@ -55,7 +58,7 @@ class MainWindow(tk.Tk):
             self.game_log.insert('end', player_status)
 
         # Perform a round of night phase
-        if len(self.game.alivePlayers) == self.villagers + self.mafiosi + self.doctors:
+        if len(self.game.alivePlayers) == self.totalPlayers:
             # In the first round, always kill randomly a villager during the night phase
             villager = self.game.voteVillager(mafia_strategy='random')
         else:
@@ -65,6 +68,15 @@ class MainWindow(tk.Tk):
         # Kill the villager and update the model
         self.game.kill(villager)
         print(f"{villager.name} was killed during the night phase!\n")
+
+        # The mafiosi might win the game by killing a villager at night
+        win = self.game.checkWin()
+        if win:
+            messagebox.showinfo("Game Over", f"{win} win!")
+            return
+        elif len(self.game.alivePlayers) <= 2:
+            messagebox.showinfo("Game Over", "Tie!")
+            return
 
         # Perform a round of day phase
         voteCount = {}
@@ -107,7 +119,7 @@ class MainWindow(tk.Tk):
                     player.updateKnowledge()
 
         self.model.build_model()
-        self.model.draw_model(iter)
+        self.model.draw_model("test")
         self.figure.clear()
         pos = nx.spring_layout(self.model.G, scale=2)
         nx.draw_networkx(self.model.G, pos, ax=self.figure.add_subplot(111))
@@ -119,9 +131,9 @@ class MainWindow(tk.Tk):
         if win:
             messagebox.showinfo("Game Over", f"{win} win!")
             return
-        elif len(self.game.alivePlayers) <= 2:
-            messagebox.showinfo("Game Over", "Tie!")
-            return
+        #elif len(self.game.alivePlayers) <= 2:
+            #messagebox.showinfo("Game Over", "Tie!")
+            #return
         else:
             self.after(500, self.playMafia, iteration + 1)
 
