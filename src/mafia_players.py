@@ -9,6 +9,7 @@ class Roles(Enum):
     VILLAGER = 0
     MAFIOSO = 1
     DOCTOR = 2
+    INFORMANT = 3
 
 
 class Player:
@@ -44,9 +45,8 @@ class Player:
         for player in self.alivePlayers:
             for belief in player.playerBeliefs:
                 if belief[0] == self:
-                    for role in Roles:
-                        if role.name in belief[1] and role != self.role:
-                            belief[1].remove(role.name)
+                    belief[1].clear()
+                    belief[1].append(self.role.name)
 
     def updateKnowledge(self):
         for player in self.alivePlayers:
@@ -63,6 +63,25 @@ class Villager(Player):
 
     def suspectMafioso(self, player, candidate):
         player.accusations[candidate.name] += 1
+
+
+class Informant(Villager):
+    def __init__(self):
+        super().__init__()
+        self.role = Roles.INFORMANT
+
+    def initializeBeliefs(self, target=None):
+        super().initializeBeliefs()
+        # Informants know who one of the mafiosi is
+        if target is None:
+            mafiosi = [pl for pl in self.alivePlayers if isinstance(pl, Mafioso)]
+            if not mafiosi:
+                print("No mafiosi for the informant to know about!")
+                return
+            target = random.choice(mafiosi)
+        targetBelief = [belief for belief in self.playerBeliefs if belief[0] == target][0]
+        targetBelief[1].clear()
+        targetBelief[1].append(Roles.MAFIOSO.name)
 
 
 class Mafioso(Player):
