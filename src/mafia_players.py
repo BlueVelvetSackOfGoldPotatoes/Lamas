@@ -19,6 +19,8 @@ class Player:
         self.deadPlayers = []
         self.playerBeliefs = []  # List of tuples (player, list of beliefs)
         self.name = name
+        self.kripke_model = None  # Will be set by MafiaGame
+        self.cached_roles = None  # Will be set by KripkeModel
 
     def print_state(self):
         print(f"Name: {self.name}")
@@ -36,9 +38,13 @@ class Player:
                 self.playerBeliefs.append((player, [role.name for role in Roles]))
 
     def vote(self):
+        # Use the Kripke model to inform the voting strategy
         candidates = [belief[0] for belief in self.playerBeliefs if
-                      (belief[0] in self.alivePlayers and "MAFIOSO" in belief[1])]
-        # Vote for a random possible mafioso
+                      (belief[0] in self.alivePlayers and "MAFIOSO" in self.kripke_model.get_possible_roles(belief[0]))]
+        if not candidates:
+            # Fall back to random voting if there are no candidates whom the Kripke model thinks could be a mafioso
+            candidates = [player for player in self.alivePlayers if player != self]
+        # Vote for a random candidate
         return random.choice(candidates)
 
     def die(self):
@@ -48,13 +54,15 @@ class Player:
                     belief[1].clear()
                     belief[1].append(self.role.name)
 
-    def updateKnowledge(self):
-        for player in self.alivePlayers:
-            for belief in player.playerBeliefs:
-                if belief[0] == self:
-                    if 'MAFIOSO' in belief[1]:
-                        belief[1].remove('MAFIOSO')
+    def updateBeliefs(self, deceased):
+        for belief in self.playerBeliefs:
+            if belief[0] == deceased:
+                belief[1].clear()
+                belief[1].append(deceased.role.name)
 
+            elif deceased.role == Roles.MAFIOSO:
+                if 'MAFIOSO' in belief[1]:
+                    belief[1].remove('MAFIOSO')
 
 class Villager(Player):
     def __init__(self):
@@ -63,7 +71,6 @@ class Villager(Player):
 
     def suspectMafioso(self, player, candidate):
         player.accusations[candidate.name] += 1
-
 
 class Informant(Villager):
     def __init__(self):
@@ -82,7 +89,6 @@ class Informant(Villager):
         targetBelief = [belief for belief in self.playerBeliefs if belief[0] == target][0]
         targetBelief[1].clear()
         targetBelief[1].append(Roles.MAFIOSO.name)
-
 
 class Mafioso(Player):
     def __init__(self):
@@ -105,7 +111,13 @@ class Mafioso(Player):
                       (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
         # Vote for a random villager who is not in the mafia
         return random.choice(candidates)
+    
+    def updateBeliefs(self, deceased):
+        # Mafioso don't need to update their beliefs about other mafioso's roles
+        if deceased.role == Roles.MAFIOSO:
+            return
 
+        super().updateBeliefs(deceased)
 
 class Doctor(Player):
     def __init__(self):

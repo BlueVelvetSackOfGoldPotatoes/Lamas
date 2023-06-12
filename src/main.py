@@ -9,7 +9,6 @@ from matplotlib.figure import Figure
 from kripke_model import KripkeModel
 from mafia_model import MafiaGame
 
-
 class MainWindow(tk.Tk):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
         super().__init__()
@@ -44,9 +43,11 @@ class MainWindow(tk.Tk):
         self.players_label.pack()
 
     def start_game(self):
-        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors)
+        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors, informants=self.informants)
         self.totalPlayers = len(self.game.players)
         self.model = KripkeModel(self.game)
+        for player in self.game.players:
+            player.kripke_model = self.model  # Pass the Kripke model to the players
         self.playMafia()
 
     def playMafia(self, iteration=0):
@@ -77,6 +78,10 @@ class MainWindow(tk.Tk):
         elif len(self.game.alivePlayers) <= 2:
             messagebox.showinfo("Game Over", "Tie!")
             return
+        
+        # Update player beliefs..
+        for player in self.game.alivePlayers:
+            player.updateBeliefs(villager)
 
         # Perform a round of day phase
         voteCount = {}
@@ -110,16 +115,12 @@ class MainWindow(tk.Tk):
 
         for player in self.game.players:
             print(f"{player.name} correctly suspects {player.accusations}")
-
-        if maxPlayer.role.name == 'MAFIOSO':
-            # Update players' beliefs if a Mafia member is eliminated
-            for player in self.game.players:
-                if player.accusations[maxPlayer.name] >= 1:
-                    print(f"{player.name} correctly suspected {maxPlayer.name}!")
-                    player.updateKnowledge()
+        
+        for player in self.game.alivePlayers:
+            player.updateBeliefs(maxPlayer)
 
         self.model.build_model()
-        self.model.draw_model("test")
+        self.model.draw_model(iteration)
         self.figure.clear()
         pos = nx.spring_layout(self.model.G, scale=2)
         nx.draw_networkx(self.model.G, pos, ax=self.figure.add_subplot(111))
@@ -139,5 +140,5 @@ class MainWindow(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=10, mafiosi=2, doctors=0, mafia_strategy='enemy')
+    app = MainWindow(villagers=10, mafiosi=2, doctors=0, informants=1, mafia_strategy='enemy')
     app.mainloop()

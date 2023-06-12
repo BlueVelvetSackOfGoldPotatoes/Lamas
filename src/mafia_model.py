@@ -1,10 +1,12 @@
 import random
-
+from kripke_model import KripkeModel, State, Proposition, Relation, Transition
 from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
 
 
 class MafiaGame:
     def __init__(self, villagers=10, mafiosi=3, doctors=1, informants=1):
+        self.kripke_model = KripkeModel(self)
+        
         self.players = []
         self.addPlayers(mafiosi, Mafioso)
         self.addPlayers(villagers, Villager)
@@ -19,8 +21,10 @@ class MafiaGame:
 
     def addPlayers(self, count, Role):
         for itr in range(count):
-            self.players.append(Role())
-            self.players[-1].name = f"{self.players[-1].role.name.capitalize()} {itr}"
+            player = Role()
+            player.name = f"{player.role.name.capitalize()} {itr}"
+            player.kripke_model = self.kripke_model
+            self.players.append(player)
 
     def voteVillager(self,  mafia_strategy='random', votes=None):
         # Night phase
@@ -45,6 +49,9 @@ class MafiaGame:
         self.alivePlayers.remove(player)
         self.deadPlayers.append(player)
         player.die()
+        
+        # Update Kripke model after player is killed
+        self.kripke_model.build_model()
 
     def checkWin(self):
         mafiosoCount = 0
