@@ -64,6 +64,7 @@ class Player:
                 if 'MAFIOSO' in belief[1]:
                     belief[1].remove('MAFIOSO')
 
+
 class Villager(Player):
     def __init__(self):
         super().__init__()
@@ -71,6 +72,7 @@ class Villager(Player):
 
     def suspectMafioso(self, player, candidate):
         player.accusations[candidate.name] += 1
+
 
 class Informant(Villager):
     def __init__(self):
@@ -89,6 +91,7 @@ class Informant(Villager):
         targetBelief = [belief for belief in self.playerBeliefs if belief[0] == target][0]
         targetBelief[1].clear()
         targetBelief[1].append(Roles.MAFIOSO.name)
+
 
 class Mafioso(Player):
     def __init__(self):
@@ -118,6 +121,7 @@ class Mafioso(Player):
             return
 
         super().updateBeliefs(deceased)
+
 
 class Doctor(Player):
     def __init__(self):

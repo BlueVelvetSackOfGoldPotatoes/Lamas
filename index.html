@@ -257,6 +257,13 @@
       </li>
     </ul>
 
+  <a id="project_state"></a>
+  <h2>Current state of the project</h2>
+  <p>We currently have a model that contains the doctor, informant, villager and mafia roles. Both the day and night phase are modeled, allowing the game to be played. </p>
+  <p>A Kripke model can be generated from the agent's knowledge (or beliefs, as they are mostly called in the code). Each agent has a list of possible roles for each other agent.</p>
+  <p>Additionally, agents can remember the voting history of other agents. This allows us to formulate strategies such as: when a mafia member is eliminated, all players know that people who voted against that mafioso are not in the mafia.
+  <p>This requires the simplification that mafia members never vote against their own. We simplified the model further, with the goal of making the agents' decisions based on knowledge as much as possible. Where needed, we use randomness to break ties.<\p>
+  <p>Eventually we want to show the strategies that agents use, as well as our simplifications, in formal logical notation, as well as the Kripke model. While these are already generated, for now we only use a graphical approach, which still needs work as well. </p>
   <a id="kripke_model"></a>
   <h2>Preliminaries</h2>
 
