@@ -42,14 +42,22 @@ class MafiaGame:
             candidates = [cand for cand in self.alivePlayers if cand.role.name == "VILLAGER"]
 
         villager = random.choice(candidates)
+        
+        for player in self.alivePlayers:
+            player.update_beliefs(villager)
 
         return villager
 
     def kill(self, player):
+        """Eliminate a player from the game."""
         self.alivePlayers.remove(player)
         self.deadPlayers.append(player)
         player.die()
-        
+
+        # Update player beliefs
+        for alivePlayer in self.alivePlayers:
+            alivePlayer.update_beliefs(player)
+
         # Update Kripke model after player is killed
         self.kripke_model.build_model()
 

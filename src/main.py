@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 
 from kripke_model import KripkeModel
 from mafia_model import MafiaGame
+from mafia_players import Roles
 
 class MainWindow(tk.Tk):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
@@ -69,6 +70,8 @@ class MainWindow(tk.Tk):
         # Kill the villager and update the model
         self.game.kill(villager)
         print(f"{villager.name} was killed during the night phase!\n")
+        for role in Roles:
+            self.game.kripke_model.update_model(villager, role)
 
         # The mafiosi might win the game by killing a villager at night
         win = self.game.checkWin()
@@ -81,7 +84,7 @@ class MainWindow(tk.Tk):
         
         # Update player beliefs..
         for player in self.game.alivePlayers:
-            player.updateBeliefs(villager)
+            player.update_beliefs(villager)
 
         # Perform a round of day phase
         voteCount = {}
@@ -95,12 +98,14 @@ class MainWindow(tk.Tk):
             else:
                 voteCount[vote] = 1
 
-            if vote.role.name == 'MAFIOSO':
-                # Keep track of the votes against true Mafia members
-                player.suspectMafioso(player, vote)
-                self.votes[player] = 1
-            else:
-                self.votes[player] = 0
+            # Check if player has suspectMafioso method before calling it
+            if hasattr(player, 'suspectMafioso') and callable(getattr(player, 'suspectMafioso')):
+                if vote.role.name == 'MAFIOSO':
+                    # Keep track of the votes against true Mafia members
+                    player.suspectMafioso(player, vote)
+                    self.votes[player] = 1
+                else:
+                    self.votes[player] = 0
 
         # Find the player with the majority of votes to be eliminated during the day phase
         maxVote = 0
@@ -112,12 +117,8 @@ class MainWindow(tk.Tk):
         print(f"{maxPlayer.name} is eliminated!\n")
         # Kill the player and update the model
         self.game.kill(maxPlayer)
-
-        for player in self.game.players:
-            print(f"{player.name} correctly suspects {player.accusations}")
-        
-        for player in self.game.alivePlayers:
-            player.updateBeliefs(maxPlayer)
+        for role in Roles:
+            self.game.kripke_model.update_model(maxPlayer, role)
 
         self.model.build_model()
         self.model.draw_model(iteration)
@@ -125,7 +126,7 @@ class MainWindow(tk.Tk):
         pos = nx.spring_layout(self.model.G, scale=2)
         nx.draw_networkx(self.model.G, pos, ax=self.figure.add_subplot(111))
         self.canvas.draw()
-
+        
         win = self.game.checkWin()
         print("---------------------------------------------------------------------------------------------------\n")
 
@@ -137,7 +138,6 @@ class MainWindow(tk.Tk):
             #return
         else:
             self.after(500, self.playMafia, iteration + 1)
-
 
 if __name__ == '__main__':
     app = MainWindow(villagers=10, mafiosi=2, doctors=0, informants=1, mafia_strategy='enemy')

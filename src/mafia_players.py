@@ -39,13 +39,21 @@ class Player:
 
     def vote(self):
         # Use the Kripke model to inform the voting strategy
-        candidates = [belief[0] for belief in self.playerBeliefs if
-                      (belief[0] in self.alivePlayers and "MAFIOSO" in self.kripke_model.get_possible_roles(belief[0]))]
+        candidates = [player for player in self.alivePlayers if 'MAFIOSO' in self.kripke_model.get_believed_roles(player)]
         if not candidates:
-            # Fall back to random voting if there are no candidates whom the Kripke model thinks could be a mafioso
+            # Fall back to random voting if there are no candidates whom the Kripke model believes could be a mafioso
             candidates = [player for player in self.alivePlayers if player != self]
         # Vote for a random candidate
         return random.choice(candidates)
+
+    def update_beliefs(self, deceased):
+        # The deceased player's role is revealed
+        for belief in self.playerBeliefs:
+            if belief[0] == deceased:
+                belief[1].clear()
+                belief[1].append(deceased.role.name)
+        # Update the Kripke model with this new information
+        self.kripke_model.update_model(deceased, deceased.role)
 
     def die(self):
         for player in self.alivePlayers:
@@ -53,16 +61,6 @@ class Player:
                 if belief[0] == self:
                     belief[1].clear()
                     belief[1].append(self.role.name)
-
-    def updateBeliefs(self, deceased):
-        for belief in self.playerBeliefs:
-            if belief[0] == deceased:
-                belief[1].clear()
-                belief[1].append(deceased.role.name)
-
-            elif deceased.role == Roles.MAFIOSO:
-                if 'MAFIOSO' in belief[1]:
-                    belief[1].remove('MAFIOSO')
 
 class Villager(Player):
     def __init__(self):
@@ -107,17 +105,27 @@ class Mafioso(Player):
                 belief[1].remove(Roles.MAFIOSO.name)
 
     def vote(self):
-        candidates = [belief[0] for belief in self.playerBeliefs if
-                      (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
-        # Vote for a random villager who is not in the mafia
-        return random.choice(candidates)
-    
+        """Vote to eliminate a player."""
+        # Get the roles each player is believed to be
+        believed_roles = {player: self.kripke_model.get_believed_roles(player) for player in self.alivePlayers}
+        # Vote for the player most likely to be a mafioso
+        most_suspected = max(believed_roles, key=lambda player: believed_roles[player].count('MAFIOSO'))
+        return most_suspected
+
     def updateBeliefs(self, deceased):
-        # Mafioso don't need to update their beliefs about other mafioso's roles
+        """Update beliefs based on the deceased player's role."""
         if deceased.role == Roles.MAFIOSO:
             return
 
-        super().updateBeliefs(deceased)
+        # Get the possible roles the deceased could have been
+        possible_roles = self.kripke_model.get_possible_roles(deceased)
+        # Update beliefs accordingly
+        for player in self.alivePlayers:
+            if player != self:
+                if 'MAFIOSO' in possible_roles:
+                    player.playerBeliefs.append((deceased, ['MAFIOSO']))
+                else:
+                    player.playerBeliefs.append((deceased, ['VILLAGER', 'DOCTOR', 'INFORMANT']))
 
 class Doctor(Player):
     def __init__(self):
