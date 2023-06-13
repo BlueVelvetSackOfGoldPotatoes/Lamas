@@ -5,11 +5,14 @@
     src="https://www.maths.nottingham.ac.uk/plp/pmadw/LaTeXMathML.js">
     </script>
 
+    <p> </p>
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
 
-    body {
+    body, html {
     margin: 0;
+    padding: 0;
     font-family: Arial, Helvetica, sans-serif;
     }
 
@@ -104,10 +107,11 @@
 <div class="topnav" id="myHeader">
         <a href="#abstract">Abstract</a>
         <a href="#introduction">Introduction</a>
+        <a href="#code">Code</a>
         <a href="#kripke_model">Kripke Model</a>
-        <a href="#related_work">Related Work</a>
-        <a href="#results_discussion:">Results and Discussion</a>
+        <a href="#results_discussion">Results and Discussion</a>
         <a href="#conclusion">Conclusion</a>
+        <a href="#contributions">Contributions</a>
         <a href="#references">References</a>
         <a href="https://github.com/BlueVelvetSackOfGoldPotatoes/Lamas" target=”_blank”>GitHub</a>
 </div>
@@ -140,93 +144,22 @@
     <p>Throughout the game, players must use their observation skills, strategic thinking, and persuasive abilities to convince others of their innocence or to cast suspicion on others. The game involves much bluffing, suspicion, interrogation, and strategic voting.</p>
 
     <p>In the following sections, we will unravel the fascinating logic behind the Mafia game. We will illustrate how the seemingly chaotic discussions and accusations can be analyzed using the principles of deductive reasoning, probability, and game theory. You will discover that beneath the veil of secrecy, lies, and accusations, the game of Mafia is a compelling test of logical thinking and strategy. So, let's delve deeper into the intriguing world of the Mafia game!</p>
-    <!-- <ul>
-    <li><p>A set of m agents <span class="math inline">A = \{a_1, a_2, ..., a_m\}</span></p></li>
-    <li><p>A set of n rooms <span class="math inline">X = \{r_1, r_2, ..., r_n\}</span></p></li>
-    <li><p>A set of timesteps <span class="math inline">Y = \mathbb{N}</span></p></li>
-    <li><p>A set of predicates <span class="math inline">P = \{Imp_1, Imp_2, ..., Imp_m \}</span></p></li>
-    </ul> -->
-    <!-- <h3>Kripke Model: One Mafiosi </h3>
-    <p>The Kripke model for the case of one mafiosi is defined as follows:</p>
-    <p><span class="math inline">M^1 ::= &lt; S^1, \pi^1, R_1^1, ..., R_m^1 &gt;</span>, with:</p>
-    <ul>
-      <li><p><span class="math inline">S^1 = \{s_i | a_i \in A\}</span></p></li>
-      <li><p><span class="math inline">\pi^1(s_i)(Maf_j) = t</span> iff <span class="math inline">i = j</span></p></li>
-      <li><p><span class="math inline">R_b^1 = \{(s_i, s_j) | s_i \in S^1 \land s_j \in S^1 \land i &ne; b \land j &ne; b\} \cup \{(s_i, s_j) | s_i \in S^1 \land i = j\}</span> for all <span class="math inline">b</span> such that <span class="math inline">a_b \in A</span>. <br/> In other words: The relations for an agent are the pairs of worlds in which the number corresponding to the agent does not appear, unioned with the set of reflexive relations.</p></li>
-    </ul>
-
-    <h3>Kripke Model: Two Mafiosi </h3>
-    <p>The Kripke model for the case of two mafiosi is defined as follows:</p>
-    <p><span class="math inline">M^2 ::= &lt; S^2, \pi^2, R_1^2, ..., R_m^2 &gt;</span>, with:</p>
-    <ul>
-      <li><p><span class="math inline">S^2 = \{s_ij | a_i, a_j \in A \land i &ne; j\}</span></p></li>
-      <li><p><span class="math inline">\pi^2(s_ij)(Maf_k) = t</span> iff <span class="math inline">i = k</span> or <span class="math inline">j = k</span></p></li>
-      <li><p><span class="math inline">R_b^2 = \{(s_ij, s_kl) | s_ij, s_kl \in S^2 \land i &ne; b \land j &ne; b \land k &ne; b \land l &ne; b\} \cup \{(s_ij, s_kl) | s_ij, s_kl \in S^2 \land i = k \land j = l\}</span> for all <span class="math inline">b</span> such that <span class="math inline">a_b \in A</span>. <br/> In other words: The relations for an agent are the pairs of worlds in which the numbers corresponding to the agent do not appear, unioned with the set of reflexive relations.</p></li>
-    </ul>
-
-    <h3>Kripke Model: Number of worlds and relations</h3>
-    <p>As aforementioned, our implementation of the Mafia game supports simulations with either one or two mafiosi. The size of the Kripke model depends on this, as each world represents a state where one agent or pair of agents are the mafiosi. For one mafioso, the model has the same number of worlds as there are agents, where each world represents a state where one agent is the mafioso. Each world is connected to each world, meaning there are <span class="math inline">10*10 =100</span> relations. </p>
-    <p>For two mafiosi, the size of the model is the number of agents times the number of agents minus one, divided by two. In the case of ten agents, this means that there are <span class="math inline">(10*9)/2=45</span> possible worlds. This way, all possible combinations of agents have a single world. This means that <span class="math inline">w_1_2</span> does exist but <span class="math inline">w_2_1</span> does not. As for the relations, for each agent, each world in which that agent is not involved (45-9=36) is connected to all other worlds minus itself (35). Additionally, each world has a reflexive relation to itself. There are therefore <span class="math inline">(36*35)+45=1305</span> relations per agents, so <span class="math inline">10*1305=13050</span> relations in total.</p>
-
-    <p>There are four basic types of knowledge that can be learned in the Mafia game. Here, a<sub>1</sub> and a<sub>2</sub> $\in A$, x<sub>1</sub> and x<sub>2</sub>$\in X$ and y $\in Y$ <a href="#formal_model">(see the 'formal model' section)</a>:</p>
-    <ul>
-      <li>Whether an agent performed an action. For example, a<sub>1</sub> performed an action in location x<sub>1</sub> at time y.</li>
-      <li>Whether a mafioso killed a villager. For example, a<sub>1</sub> was killed by a<sub>2</sub> in location x<sub>1</sub> at time y.</li>
-      <li>Whether an agent is dead or alive. For example, a<sub>1</sub> is alive at time y.</li>
-      <li>Whether an agent is a mafioso or a villager. For example, a<sub>1</sub> is a mafioso.</li>
-    </ul>
-    <p>For the first two types of knowledge to be gained, it is important that a villager a<sub>1</sub> is in the same location as agent a<sub>2</sub> (where a<sub>1</sub> <span>&#8800;</span> a<sub>2</sub>) at the same time. The last knowledge type about whether an agent is a mafioso or not can be derived from the first three knowledge types as described in the next sections.</p>
-
-    <h3>Reasoning Rules</h3>
-    <p>There are several rules a villager (here a<sub>1</sub>, a<sub>2</sub> and a<sub>3</sub>) can use to deduct this last type of knowledge about who the mafiosi (here a<sub>4</sub>) are. They are listed as follows:</p>
-    <ul>
-        <li>Catching the mafioso in the act: ((a<sub>1</sub> $\land$ a<sub>4</sub>) in location x<sub>1</sub> at step y $\land$ a<sub>4</sub> kills a<sub>2</sub>) $\rightarrow$ K<sub>1</sub> Maf<sub>4</sub></li>
-        <li>Clearing a villager by seeing their action: ((a<sub>1</sub> $\land$ a<sub>2</sub>) in location x<sub>1</sub> at step y $\land$ a<sub>2</sub> performs an action in location x<sub>1</sub> at step y) $\rightarrow$ K<sub>1</sub> $\neg$Maf<sub>2</sub>.</li>
-        <li>Dead agents must be villagers: a<sub>1</sub> is dead $\rightarrow$ C $\neg$Maf<sub>1</sub></li>
-        <li><p>Trust friendly announcements. If $a_1 \in A$ knows that $a_2 \in A$ is not a mafioso, and $a_2$ shares information, then $a_1$ takes that information as factual. This is equivalent to the announcement: <br/> $[k_i (\neg Maf_j) \land k_i k_j \psi] k_i \psi$ for all $i, j$ such that $a_i \in A$ and $a_j \in A$.</p></li>
-    </ul> -->
-
+  
     <h3>Roles</h2>
     <ul>
       <li>Villagers: Villagers are the majority faction in the game. They have no special abilities and aim to identify and eliminate the Mafiosi.</li>
       <li>Mafiosi: Mafiosi are the minority faction in the game. They aim to outnumber and eliminate the Villagers without revealing their true identities.</li>
-      <li>Detective: The Detective is a special role on the Villagers' side. They have the ability to investigate the role of a player during the night phase and gather information about their allegiance.</li>
+      <li>Informant: The Informant is a special role on the Villagers' side. They have the ability to investigate the role of a player during the night phase and gather information about their allegiance.</li>
       <li>Doctor: The Doctor is another special role on the Villagers' side. They have the ability to protect a player from being eliminated during the night phase.</li>
     </ul>
     
-    <h2>Kripke Model Representation</h2>
-    <p>To formalize the game using Kripke models, we define the following elements:</p>
-    
-    <h3>States</h3>
-    <p>A state represents a possible configuration of the game, including the roles assigned to players and their current knowledge.</p>
-    <p>Let S be the set of states, and each state s ∈ S is represented as a tuple of player-role assignments and knowledge mappings. For example, s = (p1 → R1, p2 → R2, ..., pn → Rn, K1, K2, ..., Kn), where p1, p2, ..., pn are the players, R1, R2, ..., Rn are their respective roles, and K1, K2, ..., Kn represent the knowledge mappings.</p>
-    
-    <h3>Propositions</h3>
-    <p>Propositions represent the possible statements or facts about the game. We define the following propositions:</p>
-    <ul>
-      <li>Role propositions: For each player p, we have propositions Rp for the respective role assigned to player p.</li>
-      <li>Knowledge propositions: For each player p and each player q, we have propositions Kpq for player p's knowledge about the role of player q.</li>
-      <li>Alive propositions: For each player p, we have propositions Ap representing whether player p is alive or eliminated.</li>
-    </ul>
-    
-    <h3>Relations</h3>
-    <p>We define the following relations for each player:</p>
-    <ul>
-      <li>Role relations: Rp ⊆ S × S such that Rp = {(s, t) ∈ S × S | s(p) = t(p)}, meaning that the assigned role of player p remains the same between states s and t.</li>
-      <li>Knowledge relations: Kp ⊆ S × S such that Kp = {(s, t) ∈ S × S | s(Kp) ⊆ t(Kp)}, meaning that player p's knowledge is preserved or expanded between states s and t.</li>
-      <li>Alive relations: Ap ⊆ S × S such that Ap = {(s, t) ∈ S × S | s(Ap) = t(Ap)}, meaning that player p's status (alive or eliminated) remains the same between states s and t.</li>
-    </ul>
-
-    <h3>Transitions</h3>
-    <p>Transitions between states occur based on the actions taken by players during the game. The transitions are defined as the union of role, knowledge, and alive relations for all players. Formally, R = R1 ∪ R2 ∪ ... ∪ Rn, K = K1 ∪ K2 ∪ ... ∪ Kn, and A = A1 ∪ A2 ∪ ... ∪ An.</p>
-    
     <h3>Public Announcements</h3>
-    <p>Public announcements occur at the end of each phase and provide common knowledge to all players. These announcements may include the outcomes of investigations, eliminations, or protective actions taken by the Detective or Doctor.</p>
+    <p>Public announcements occur at the end of each phase and provide common knowledge to all players. These announcements may include the outcomes of investigations, eliminations, or protective actions taken by the Informant or Doctor.</p>
     <p>Based on the public announcements, players update their knowledge mappings, and the relations Kp are adjusted accordingly.</p>
     
     <h2>Gameplay and Strategies</h2>
     <p>The gameplay of Mafia involves alternating day and night phases, with players performing different actions based on their roles. During the day, players discuss and deliberate to identify potential Mafiosi and decide on a player to eliminate by voting. During the night, players with special roles take actions privately.</p>
-    <p>Players can employ different strategies and logical reasoning to deduce the roles of other players and make informed decisions. The Detective can investigate players to gain information about their roles, while the Doctor can protect players who are likely targets of the Mafiosi.</p>
+    <p>Players can employ different strategies and logical reasoning to deduce the roles of other players and make informed decisions. The Informant can investigate players to gain information about their roles, while the Doctor can protect players who are likely targets of the Mafiosi.</p>
     <p>Throughout the game, the Kripke model is updated based on the actions and public announcements, allowing players to refine their knowledge and make more accurate deductions.</p>
     
     <h3>Game Mechanics</h3>
@@ -241,8 +174,8 @@
       </li>
       <li>Night Phase:
         <ul>
-          <li>Special roles, such as the Detective and Doctor, take their respective actions privately.</li>
-          <li>The Detective can choose a player to investigate, and the result is announced publicly.</li>
+          <li>Special roles, such as the Informant and Doctor, take their respective actions privately.</li>
+          <li>The Informant can choose a player to investigate, and the result is announced publicly.</li>
           <li>The Doctor can choose a player to protect, reducing the chances of that player being eliminated by the Mafiosi.</li>
           <li>The Kripke model is updated based on the actions and public announcements during the night phase.</li>
         </ul>
@@ -257,17 +190,117 @@
       </li>
     </ul>
 
+  <a id="code"></a>
+  <h2>Code</h2>
+  <p>This project encompasses a simulation of the "Mafia" game, applying Kripke semantics to model and reason about the knowledge and beliefs of the players.</p>
+
+  <h2>1. Kripke Model</h2>
+  <p>The KripkeModel class is built upon the networkx.DiGraph class, representing the Kripke model as a directed graph. Each player in the game is a node in the graph, and edges represent the relationships between players in terms of their beliefs.</p>
+
+  <h2>2. Mafia Game</h2>
+  <p>The MafiaGame class governs the main gameplay logic. It initializes players of different roles (mafioso, villager, doctor, and informant) and manages the state of the game including the living and dead players, as well as the voting and killing mechanics. It also checks for win conditions.</p>
+
+  <h2>3. Mafia Players</h2>
+  <p>The mafia_players.py script defines the Player class and its subclasses corresponding to different roles in the game. Each player maintains their own set of beliefs about the roles of other players. Mafioso and Informant have specific knowledge about the roles of other players, and this knowledge is incorporated into their belief sets.</p>
+
+  <h2>4. Main Script</h2>
+  <p>The main script combines all the components above and provides a graphical interface for the game. It initializes a game, performs rounds of night and day phases, and allows players to vote and kill each other based on their beliefs. It also updates and displays the Kripke model after each round.</p>
+
+  <p>All these scripts interplay with each other to form the complete gameplay. Each player's belief system is updated and represented in the Kripke model, which in turn influences the decisions made during the game (who to vote or kill). This iterative process continues until a win condition is met, demonstrating an application of Kripke semantics in modeling complex social scenarios.</p>
+
+
   <a id="kripke_model"></a>
-  <h2>Preliminaries</h2>
+  <h2>Kripke Model</h2>
 
-  <a id="related_work"></a>
-  <h2>Related Work</h2>
+  <h2>Kripke Model Representation</h2>
+  <p>To formalize the game using Kripke models, we define the following elements:</p>
+  
+  <h3>States</h3>
+  <p>A state represents a possible configuration of the game, including the roles assigned to players and their current knowledge.</p>
+  <p>Let S be the set of states, and each state s ∈ S is represented as a tuple of player-role assignments and knowledge mappings. For example, s = (p1 → R1, p2 → R2, ..., pn → Rn, K1, K2, ..., Kn), where p1, p2, ..., pn are the players, R1, R2, ..., Rn are their respective roles, and K1, K2, ..., Kn represent the knowledge mappings.</p>
+  
+  <h3>Propositions</h3>
+  <p>Propositions represent the possible statements or facts about the game. We define the following propositions:</p>
+  <ul>
+    <li>Role propositions: For each player p, we have propositions Rp for the respective role assigned to player p.</li>
+    <li>Knowledge propositions: For each player p and each player q, we have propositions Kpq for player p's knowledge about the role of player q.</li>
+    <li>Alive propositions: For each player p, we have propositions Ap representing whether player p is alive or eliminated.</li>
+  </ul>
+  
+  <h3>Relations</h3>
+  <p>We define the following relations for each player:</p>
+  <ul>
+    <li>Role relations: Rp ⊆ S × S such that Rp = {(s, t) ∈ S × S | s(p) = t(p)}, meaning that the assigned role of player p remains the same between states s and t.</li>
+    <li>Knowledge relations: Kp ⊆ S × S such that Kp = {(s, t) ∈ S × S | s(Kp) ⊆ t(Kp)}, meaning that player p's knowledge is preserved or expanded between states s and t.</li>
+    <li>Alive relations: Ap ⊆ S × S such that Ap = {(s, t) ∈ S × S | s(Ap) = t(Ap)}, meaning that player p's status (alive or eliminated) remains the same between states s and t.</li>
+  </ul>
 
+  <h3>Transitions</h3>
+  <p>Transitions between states occur based on the actions taken by players during the game. The transitions are defined as the union of role, knowledge, and alive relations for all players. Formally, R = R1 ∪ R2 ∪ ... ∪ Rn, K = K1 ∪ K2 ∪ ... ∪ Kn, and A = A1 ∪ A2 ∪ ... ∪ An.</p>
+
+  
   <a id="results_discussion"></a>
-  <h2>Results and Discussion</h2>
- 
+  <h2>Results and Discussion</h3>
+  <p>The Mafia Game Simulation successfully replicates the dynamics of a typical game of Mafia, with alternating day and night phases and various roles participating in the decision-making process. The simulation allows us to observe and analyze the game's progression and outcomes in a controlled and repeatable manner.</p>
+  <p>The simulation allows us to evaluate how effectively each role performs in the context of the game. For example, we can measure how often the Mafia is successful in deceiving the villagers or how often the Doctor or Informant roles are able to protect or inform their fellow villagers, respectively.</p>
+  <p>The use of Kripke structures in representing player knowledge offers valuable insight into how the game dynamics change as players gain, lose, or alter their beliefs about other players. The graphical representation of these structures allows for easy visualization of the game's epistemic state at any given point.</p>
+  <p>In essence, the simulation effectively demonstrates how the Mafia game operates, provides tools for strategy analysis and role performance, and showcases a complex example of knowledge representation and belief revision in action.</p>
+
+
+  <h3>Discussion</h3>
+    <p>The simulation of the Mafia game developed in this project offers a unique perspective on how epistemic logic and belief revision can be applied to model real-world systems. It highlights how individuals use their knowledge and the knowledge of others to make decisions, and how these decisions can affect the overall outcome of a system or situation.</p>
+
+    <p>Through this simulation, we were able to investigate different strategies used by the players in the game, specifically the Mafiosi and the Villagers. Different strategies lead to different game outcomes, which raises the question of what the optimal strategy might be for each role.</p>
+
+    <p>It was also interesting to observe how the beliefs of the players changed throughout the game. By integrating a graphical user interface, we could visualize these changes in beliefs and how they impacted the decisions of the players. This aspect of the simulation demonstrates the dynamic nature of knowledge and belief in complex systems.</p>
+
+    <p>One limitation of the current implementation, however, is that it does not consider emotions or irrational behavior, which could be potential areas for future work. Overall, this project has provided valuable insights into the interplay between knowledge, belief, decision-making, and group dynamics.</p>
+     
   <a id="conclusion"></a>
   <h2>Conclusion</h2>
+
+    <p>The Mafia Game Simulation is a compelling implementation of the popular party game Mafia, realized through the Python programming language and visualized through an interactive GUI. By leveraging the mechanics of the game, this simulation offers a framework for analyzing player behavior, decision-making strategies, and the effects of information asymmetry on group dynamics.</p>
+
+    <p>Through the use of Kripke structures and belief revision, the simulation provides a sophisticated model of how player knowledge changes over the course of the game. This aspect of the simulation illuminates the underpinnings of epistemic logic in a tangible and relatable context, showcasing its utility in representing and reasoning about knowledge and beliefs.</p>
+
+    <p>Furthermore, the modularity of the implementation allows for the exploration of various strategies and game settings, making it a valuable tool for both educational purposes and strategy optimization. It successfully illustrates how different game roles can impact the overall game outcomes.</p>
+
+    <p>In conclusion, this Mafia Game Simulation serves as a useful tool for studying group dynamics, decision-making strategies, and knowledge representation, all within the exciting and engaging context of the classic Mafia game.</p>
+
+
+  <a id="contributions"></a>
+  <h2>Contributions</h2>
+
+  <table style="width:100%; border: 1px solid black; text-align:center">
+      <tr>
+          <th>Name</th>
+          <th>Student ID</th>
+          <th>Website Contribution</th>
+          <th>Code Contribution</th>
+          <th>Background Research Contribution</th>
+      </tr>
+      <tr>
+          <td>Chrysoula-Maria Nampouri</td>
+          <td>s4721810</td>
+          <td>33.33%</td>
+          <td>33.33%</td>
+          <td>33.33%</td>
+      </tr>
+      <tr>
+          <td>Daan Windt</td>
+          <td>s3486427</td>
+          <td>33.33%</td>
+          <td>33.33%</td>
+          <td>33.33%</td>
+      </tr>
+      <tr>
+          <td>Gonçalo Hora de Carvalho</td>
+          <td>s3450295</td>
+          <td>33.33%</td>
+          <td>33.33%</td>
+          <td>33.33%</td>
+      </tr>
+  </table>
 
   <h3 id="references" class="unnumbered">References</h3>
   <div id="refs" class="references">
