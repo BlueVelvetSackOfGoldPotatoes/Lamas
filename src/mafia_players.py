@@ -61,8 +61,8 @@ class Villager(Player):
         super().__init__()
         self.role = Roles.VILLAGER
 
-    def suspectMafioso(self, player, candidate):
-        player.accusations[candidate.name] += 1
+    def suspectMafioso(self, candidate):
+        self.accusations[candidate.name] += 1
 
 
 class Informant(Villager):
@@ -112,5 +112,14 @@ class Doctor(Player):
         super().__init__()
         self.role = Roles.DOCTOR
 
-    def suspectMafioso(self, player, candidate):
-        player.accusations[candidate.name] += 1
+    def suspectMafioso(self, candidate):
+        self.accusations[candidate.name] += 1
+
+    def changeKnowledge(self, villager):
+        # After saving a player from the night phase, update the knowledge that he is a villager
+        for belief in self.playerBeliefs:
+            if belief[0] == villager:
+                print(belief[0])
+                if 'MAFIOSO' in belief[1]:
+                    belief[1].remove('MAFIOSO')
+

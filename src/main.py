@@ -10,6 +10,8 @@ from kripke_model import KripkeModel
 from mafia_model import MafiaGame
 
 
+
+
 class MainWindow(tk.Tk):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
         super().__init__()
@@ -66,16 +68,16 @@ class MainWindow(tk.Tk):
             villager = self.game.voteVillager(mafia_strategy=self.mafia_strategy, votes=self.votes)
 
         # If the doctor is alive, try to protect one player after the night phase
-        if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers]:  # Doctor is alive
-            protected = self.game.protectPlayer()
-            # Check if the player to be protected was the one killed in the night phase and protect him
-            if villager == protected:
-                print(f"{villager.name} was saved by the Doctor after the night phase!\n")
-            else:
-                # Kill the villager and update the model
-                self.game.kill(villager)
-                print(f"{villager.name} was killed during the night phase!\n")
-        else:  # Doctor is not alive
+        protected = self.game.protectPlayer()
+        if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers] and villager == protected:
+            # Check if the player to be protected was the 'villager' killed in the night phase and protect him
+            print(f"{villager.name} was saved by the Doctor after the night phase!\n")
+            # Update the knowledge of Doctors about this player
+            for player in self.game.alivePlayers:
+                if player.role.name == 'DOCTOR':
+                    player.changeKnowledge(villager)
+        else:
+            # Either the Doctor is not alive or the protected player is not the same that was killed
             # Kill the villager and update the model
             self.game.kill(villager)
             print(f"{villager.name} was killed during the night phase!\n")
@@ -103,7 +105,7 @@ class MainWindow(tk.Tk):
 
             if vote.role.name == 'MAFIOSO':
                 # Keep track of the votes against true Mafia members
-                player.suspectMafioso(player, vote)
+                player.suspectMafioso(vote)
                 self.votes[player] = 1
             else:
                 self.votes[player] = 0
@@ -147,5 +149,5 @@ class MainWindow(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=10, mafiosi=2, doctors=1, informants=0, mafia_strategy='enemy')
+    app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=0, mafia_strategy='enemy')
     app.mainloop()

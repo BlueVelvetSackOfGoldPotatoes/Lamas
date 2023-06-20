@@ -30,11 +30,13 @@ class MafiaGame:
             candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and vote == 1]
         elif mafia_strategy == 'allied':
             # Choose a villager who supported mafia in the latest day phase
-            candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and cand.role.name == "VILLAGER" and vote == 0]
+            candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and
+                          cand.role.name in ["VILLAGER", "DOCTOR", "INFORMANT"] and
+                          vote == 0]
 
         if mafia_strategy == 'random' or not candidates:
             # Choose randomly a villager to kill
-            candidates = [cand for cand in self.alivePlayers if cand.role.name == "VILLAGER"]
+            candidates = [cand for cand in self.alivePlayers if cand.role.name in ["VILLAGER", "DOCTOR", "INFORMANT"]]
 
         villager = random.choice(candidates)
 
