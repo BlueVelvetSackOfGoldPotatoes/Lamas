@@ -1,16 +1,42 @@
-import tkinter as tk
-import tkinter.scrolledtext as st
-from tkinter import messagebox
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QLabel, QMessageBox, QVBoxLayout, QWidget, QScrollArea
+from PyQt5.QtCore import QTimer, Qt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+from matplotlib.figure import Figure
 
 import networkx as nx
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.figure import Figure
 
 from kripke_model import KripkeModel
 from mafia_model import MafiaGame
 
+class ScrollablePlotWindow(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
 
-class MainWindow(tk.Tk):
+        self.figure = Figure(figsize=(5, 5), dpi=100)
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.toolbar)
+        layout.addWidget(self.canvas)
+
+        self.setLayout(layout)
+
+    def update_plot(self, graph):
+        self.figure.clear()
+        pos = nx.spring_layout(graph, scale=2)
+        nx.draw_networkx(graph, pos, ax=self.figure.add_subplot(111))
+
+        ax = self.figure.gca()
+        ax.set_aspect("auto")
+        ax.autoscale(enable=True)
+
+        self.canvas.draw()
+
+class MainWindow(QMainWindow):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
         super().__init__()
         self.villagers = villagers
@@ -22,26 +48,34 @@ class MainWindow(tk.Tk):
         self.model = None
         self.votes = None
         self.totalPlayers = 0
+        self.round = 0
 
-        self.geometry("800x600")
-        self.title("Mafia Game")
+        self.setGeometry(500, 500, 500, 300)
+        self.setWindowTitle("Mafia Game")
 
         # Start button
-        self.start_button = tk.Button(self, text="Start Game", command=self.start_game)
-        self.start_button.pack()
+        self.start_button = QPushButton(self)
+        self.start_button.setText("Start Game")
+        self.start_button.clicked.connect(self.start_game)
+        self.start_button.move(10, 10)
 
         # Game log text box
-        self.game_log = st.ScrolledText(self, width=80, height=20)
-        self.game_log.pack()
+        self.game_log = QTextEdit(self)
+        self.game_log.setGeometry(500, 50, 1000, 500)
+        self.game_log.setAlignment(Qt.AlignCenter)
 
-        # Initialize figure and canvas
-        self.figure = Figure(figsize=(5, 5), dpi=100)
-        self.canvas = FigureCanvasTkAgg(self.figure, master=self)
-        self.canvas.get_tk_widget().pack()
+        # Scrollable plot window
+        self.scrollable_plot_window = ScrollablePlotWindow(self)
+        self.scroll_area = QScrollArea(self)
+        self.scroll_area.setGeometry(500, 500, 1000, 500)
+        self.scroll_area.setWidget(self.scrollable_plot_window)
 
         # Players list
-        self.players_label = tk.Label(self, text="")
-        self.players_label.pack()
+        self.players_label = QLabel(self)
+        self.players_label.setGeometry(10, 600, 780, 30)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.playMafia)
 
     def start_game(self):
         self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors)
@@ -49,33 +83,36 @@ class MainWindow(tk.Tk):
         self.model = KripkeModel(self.game)
         self.playMafia()
 
-    def playMafia(self, iteration=0):
-        self.game_log.insert('end', f"\n\n=== Round {iteration} ===\n\n")
+    def playMafia(self):
+        self.round += 1
+        self.game_log.append(f"\n\n=== Round {self.round} ===\n\n")
 
         for player in self.game.alivePlayers:
             player.print_state()
             player_status = f"{player.name} (Role: {player.role.name})\n"
-            self.game_log.insert('end', player_status)
+            self.game_log.append(player_status)
 
         # Perform a round of night phase
         if len(self.game.alivePlayers) == self.totalPlayers:
             # In the first round, always kill randomly a villager during the night phase
             villager = self.game.voteVillager(mafia_strategy='random')
         else:
-            # In the rest rounds, follow a certain strategy
+            # In the rest of the rounds, follow a certain strategy
             villager = self.game.voteVillager(mafia_strategy=self.mafia_strategy, votes=self.votes)
 
         # Kill the villager and update the model
         self.game.kill(villager)
-        print(f"{villager.name} was killed during the night phase!\n")
+        self.game_log.append(f"{villager.name} was killed during the night phase!\n")
 
         # The mafiosi might win the game by killing a villager at night
         win = self.game.checkWin()
         if win:
-            messagebox.showinfo("Game Over", f"{win} win!")
+            QMessageBox.information(self, "Game Over", f"{win} win!")
+            self.timer.stop()
             return
         elif len(self.game.alivePlayers) <= 2:
-            messagebox.showinfo("Game Over", "Tie!")
+            QMessageBox.information(self, "Game Over", "Tie!")
+            self.timer.stop()
             return
 
         # Perform a round of day phase
@@ -84,7 +121,7 @@ class MainWindow(tk.Tk):
         for player in self.game.alivePlayers:
             # Open vote for the player to be eliminated
             vote = player.vote()
-            print(f"{player.name} votes to eliminate {vote.name}")
+            self.game_log.append(f"{player.name} votes to eliminate {vote.name}")
             if vote in voteCount:
                 voteCount[vote] += 1
             else:
@@ -104,40 +141,38 @@ class MainWindow(tk.Tk):
             if voteCount[player] > maxVote:
                 maxVote = voteCount[player]
                 maxPlayer = player
-        print(f"{maxPlayer.name} is eliminated!\n")
+        self.game_log.append(f"{maxPlayer.name} is eliminated!\n")
         # Kill the player and update the model
         self.game.kill(maxPlayer)
 
         for player in self.game.players:
-            print(f"{player.name} correctly suspects {player.accusations}")
+            self.game_log.append(f"{player.name} correctly suspects {player.accusations}")
 
         if maxPlayer.role.name == 'MAFIOSO':
             # Update players' beliefs if a Mafia member is eliminated
             for player in self.game.players:
                 if player.accusations[maxPlayer.name] >= 1:
-                    print(f"{player.name} correctly suspected {maxPlayer.name}!")
+                    self.game_log.append(f"{player.name} correctly suspected {maxPlayer.name}!")
                     player.updateKnowledge()
 
         self.model.build_model()
-        self.model.draw_model("test")
-        self.figure.clear()
-        pos = nx.spring_layout(self.model.G, scale=2)
-        nx.draw_networkx(self.model.G, pos, ax=self.figure.add_subplot(111))
-        self.canvas.draw()
+        self.scrollable_plot_window.update_plot(self.model.G.copy())  # Create a copy of the graph
+        self.game_log.append("---------------------------------------------------------------------------------------------------\n")
 
         win = self.game.checkWin()
-        print("---------------------------------------------------------------------------------------------------\n")
-
         if win:
-            messagebox.showinfo("Game Over", f"{win} win!")
+            QMessageBox.information(self, "Game Over", f"{win} win!")
+            self.timer.stop()
             return
-        #elif len(self.game.alivePlayers) <= 2:
-            #messagebox.showinfo("Game Over", "Tie!")
-            #return
-        else:
-            self.after(500, self.playMafia, iteration + 1)
 
+        self.start_timer()
+
+    def start_timer(self):
+        self.timer.start(500)
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=10, mafiosi=2, doctors=0, mafia_strategy='enemy')
-    app.mainloop()
+    app = QApplication(sys.argv)
+    window = MainWindow(villagers=10, mafiosi=2, doctors=0, mafia_strategy='enemy')
+    window.setWindowFlags(Qt.Window | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint)
+    window.showMaximized()
+    sys.exit(app.exec_())
