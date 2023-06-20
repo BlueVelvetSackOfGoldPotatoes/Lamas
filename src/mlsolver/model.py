@@ -6,6 +6,7 @@ formulas
 
 from kripke import KripkeStructure, World
 from formula import Atom, And, Not, Or, Box_a, Box_star
+import copy
 
 
 class WiseMenWithHat:
@@ -90,19 +91,54 @@ class Mafia:
         self.knowledge_base.append(Box_a('3', Atom('3:R')))
         
     def generate_worlds(self, roles):
-        worldLists = {}
+        worldLists = []
         worldSize = sum(roles.values())
         for role in roles:
-            worldLists[role] = self.add_players(role, roles[role], worldSize)
+            worldLists.append(self.add_players(role, roles[role], worldSize))
             worldSize -= roles[role]
         tempWorlds = []
         # Combine the worlds from add_players with only 1 player into actual worlds.
         print(worldLists)
-        modelWorlds = combine_worlds(worldLists)
+        modelWorlds = self.combine_worlds(worldLists)
+        for model in modelWorlds:
+            print(model)
+        print(f"Actually, there were {len(modelWorlds)} worlds.")
         
     
     def combine_worlds(self, worldLists):
-        return worldLists
+        itrs = [0 for worldList in worldLists]
+        ret = []
+        while True:
+            # Combine worlds as listed in itrs.
+            worlds = [copy.deepcopy(worldLists[num][itr]) for num, itr in enumerate(itrs)]
+            tempWorld = worlds[0]
+            for itr in range(len(tempWorld)): 
+                if tempWorld[itr] is None:
+                    roleAdded = False
+                    for witr in range(1, len(worlds)):
+                        if worlds[witr]:
+                            role = worlds[witr][0]
+                            worlds[witr].pop(0)
+                            if role is not None:
+                                tempWorld[itr] = role
+                                roleAdded = True
+                                break
+                    if not roleAdded:
+                        print("Role could not be added!")
+            ret.append(tempWorld)
+            # Go to the next world.
+            worldsLeft = False
+            for count in range(len(worldLists)):
+                itrs[count] += 1
+                if itrs[count] == len(worldLists[count]):
+                    itrs[count] = 0
+                    continue
+                worldsLeft = True
+                break
+            if not worldsLeft:
+                break
+            
+        return ret
     
     def add_players(self, role, numPlayers, worldSize):
         print(f"Adding {numPlayers} {role}.")
