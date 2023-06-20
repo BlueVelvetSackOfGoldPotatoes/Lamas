@@ -112,10 +112,5 @@ class Doctor(Player):
         super().__init__()
         self.role = Roles.DOCTOR
 
-    def protect(self):
-        candidates = [player for player in self.alivePlayers if player != self]
-        protected = random.choice(candidates)
-        return protected
-
     def suspectMafioso(self, player, candidate):
         player.accusations[candidate.name] += 1

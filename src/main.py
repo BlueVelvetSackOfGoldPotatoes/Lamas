@@ -44,7 +44,7 @@ class MainWindow(tk.Tk):
         self.players_label.pack()
 
     def start_game(self):
-        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors)
+        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors, informants=self.informants)
         self.totalPlayers = len(self.game.players)
         self.model = KripkeModel(self.game)
         self.playMafia()
@@ -65,9 +65,20 @@ class MainWindow(tk.Tk):
             # In the rest rounds, follow a certain strategy
             villager = self.game.voteVillager(mafia_strategy=self.mafia_strategy, votes=self.votes)
 
-        # Kill the villager and update the model
-        self.game.kill(villager)
-        print(f"{villager.name} was killed during the night phase!\n")
+        # If the doctor is alive, try to protect one player after the night phase
+        if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers]:  # Doctor is alive
+            protected = self.game.protectPlayer()
+            # Check if the player to be protected was the one killed in the night phase and protect him
+            if villager == protected:
+                print(f"{villager.name} was saved by the Doctor after the night phase!\n")
+            else:
+                # Kill the villager and update the model
+                self.game.kill(villager)
+                print(f"{villager.name} was killed during the night phase!\n")
+        else:  # Doctor is not alive
+            # Kill the villager and update the model
+            self.game.kill(villager)
+            print(f"{villager.name} was killed during the night phase!\n")
 
         # The mafiosi might win the game by killing a villager at night
         win = self.game.checkWin()
@@ -131,13 +142,10 @@ class MainWindow(tk.Tk):
         if win:
             messagebox.showinfo("Game Over", f"{win} win!")
             return
-        #elif len(self.game.alivePlayers) <= 2:
-            #messagebox.showinfo("Game Over", "Tie!")
-            #return
         else:
             self.after(500, self.playMafia, iteration + 1)
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=10, mafiosi=2, doctors=0, mafia_strategy='enemy')
+    app = MainWindow(villagers=10, mafiosi=2, doctors=1, informants=0, mafia_strategy='enemy')
     app.mainloop()

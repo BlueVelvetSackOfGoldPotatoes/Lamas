@@ -23,9 +23,8 @@ class MafiaGame:
             self.players[-1].name = f"{self.players[-1].role.name.capitalize()} {itr}"
 
     def voteVillager(self,  mafia_strategy='random', votes=None):
-        # Night phase
+        # Night phase strategies
         candidates = None
-
         if mafia_strategy == 'enemy':
             # Choose a villager who voted against mafia in the latest day phase
             candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and vote == 1]
@@ -40,6 +39,13 @@ class MafiaGame:
         villager = random.choice(candidates)
 
         return villager
+
+    def protectPlayer(self):
+        # Choose one player to protect during the night phase
+        # Only if at least one Doctor is alive
+        candidates = [player for player in self.alivePlayers]
+        protected = random.choice(candidates)
+        return protected
 
     def kill(self, player):
         self.alivePlayers.remove(player)
