@@ -124,6 +124,7 @@ class Mafia:
                                 roleAdded = True
                                 break
                     if not roleAdded:
+                        # If this is ever printed, there is a bug in the code!
                         print("Role could not be added!")
             ret.append(tempWorld)
             # Go to the next world.
