@@ -22,7 +22,7 @@ class MafiaGame:
             self.players.append(Role())
             self.players[-1].name = f"{self.players[-1].role.name.capitalize()} {itr}"
 
-    def voteVillager(self,  mafia_strategy='random', votes=None):
+    def voteVillager(self, mafia_strategy='random', votes=None):
         # Night phase
         candidates = None
 
@@ -36,9 +36,12 @@ class MafiaGame:
         if mafia_strategy == 'random' or not candidates:
             # Choose randomly a villager to kill
             candidates = [cand for cand in self.alivePlayers if cand.role.name == "VILLAGER"]
-
+            
+        print("candidates:", candidates)
+        if candidates == []:
+            return None
+        
         villager = random.choice(candidates)
-
         return villager
 
     def kill(self, player):
