@@ -112,6 +112,15 @@ class Doctor(Player):
         super().__init__()
         self.role = Roles.DOCTOR
 
+    def initializeBeliefs(self):
+        super().initializeBeliefs()
+        # Doctors know who the other Doctors are
+        for belief in self.playerBeliefs:
+            if belief[0].role == Roles.DOCTOR and belief[1] != ['DOCTOR']:
+                for role in Roles:
+                    if role != Roles.DOCTOR and role.name in belief[1]:
+                        belief[1].remove(role.name)
+
     def suspectMafioso(self, candidate):
         self.accusations[candidate.name] += 1
 
@@ -119,7 +128,6 @@ class Doctor(Player):
         # After saving a player from the night phase, update the knowledge that he is a villager
         for belief in self.playerBeliefs:
             if belief[0] == villager:
-                print(belief[0])
                 if 'MAFIOSO' in belief[1]:
                     belief[1].remove('MAFIOSO')
 

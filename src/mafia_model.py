@@ -43,8 +43,8 @@ class MafiaGame:
         return villager
 
     def protectPlayer(self):
+        """ This function is called only if at least one Doctor is alive. """
         # Choose one player to protect during the night phase
-        # Only if at least one Doctor is alive
         candidates = [player for player in self.alivePlayers]
         protected = random.choice(candidates)
         return protected

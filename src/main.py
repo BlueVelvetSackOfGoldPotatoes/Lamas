@@ -10,8 +10,6 @@ from kripke_model import KripkeModel
 from mafia_model import MafiaGame
 
 
-
-
 class MainWindow(tk.Tk):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
         super().__init__()
@@ -46,7 +44,8 @@ class MainWindow(tk.Tk):
         self.players_label.pack()
 
     def start_game(self):
-        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors, informants=self.informants)
+        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors,
+                              informants=self.informants)
         self.totalPlayers = len(self.game.players)
         self.model = KripkeModel(self.game)
         self.playMafia()
@@ -76,6 +75,7 @@ class MainWindow(tk.Tk):
             for player in self.game.alivePlayers:
                 if player.role.name == 'DOCTOR':
                     player.changeKnowledge(villager)
+            # Decide whether Doctor will let the rest players know about this gained knowledge
         else:
             # Either the Doctor is not alive or the protected player is not the same that was killed
             # Kill the villager and update the model
