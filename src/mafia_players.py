@@ -20,6 +20,7 @@ class Player:
         self.playerBeliefs = []  # List of tuples (player, list of beliefs)
         self.name = name
         self.kripke_model = None  # Will be set by MafiaGame
+        self.player_id = None # Will be set by MafiaGame
         self.cached_roles = None  # Will be set by KripkeModel
 
     def print_state(self):
@@ -29,13 +30,34 @@ class Player:
         for belief in self.playerBeliefs:
             print(f"{belief[0].name}: {belief[1]}, " + ("dead" if belief[0] not in self.alivePlayers else "alive"))
         print("")
+        
+    def convertLetterToRole(self, letter):
+        for role in Roles:
+            if role.name[0] == letter:
+                return role
+        return None
 
-    def initializeBeliefs(self):
+    def initializeBeliefs(self, model, currentWorld):
+        num_players = len(currentWorld)
+        self.playerBeliefs = []
+        for player in self.alivePlayers:
+            self.playerBeliefs.append((player, []))
+        for relation in model.ks.relations[str(self.player_id)]:
+            if currentWorld in relation:
+                for world in relation:
+                    if world != currentWorld:
+                        for num, role in enumerate(world):
+                            actualRole = self.convertLetterToRole(role)
+                            if actualRole.name not in self.playerBeliefs[num][1]:
+                                self.playerBeliefs[num][1].append(actualRole.name)
+        
+        '''
         for player in self.alivePlayers:
             if player == self:
                 self.playerBeliefs.append((player, [self.role.name]))
             else:
                 self.playerBeliefs.append((player, [role.name for role in Roles]))
+        '''
 
     def vote(self):
         # Use the Kripke model to inform the voting strategy
@@ -79,8 +101,8 @@ class Informant(Villager):
         super().__init__()
         self.role = Roles.INFORMANT
 
-    def initializeBeliefs(self, target=None):
-        super().initializeBeliefs()
+    def initializeBeliefs(self, model, currentWorld, target=None):
+        super().initializeBeliefs(model, currentWorld)
         # Informants know who one of the mafiosi is
         if target is None:
             mafiosi = [pl for pl in self.alivePlayers if isinstance(pl, Mafioso)]
@@ -98,9 +120,10 @@ class Mafioso(Player):
         super().__init__()
         self.role = Roles.MAFIOSO
 
-    def initializeBeliefs(self):
-        super().initializeBeliefs()
+    def initializeBeliefs(self, model, currentWorld):
+        super().initializeBeliefs(model, currentWorld)
         # Mafiosi know who the other mafiosi are
+        '''
         for belief in self.playerBeliefs:
             if belief[0].role == Roles.MAFIOSO:
                 for role in Roles:
@@ -108,6 +131,7 @@ class Mafioso(Player):
                         belief[1].remove(role.name)
             else:
                 belief[1].remove(Roles.MAFIOSO.name)
+        '''
 
     def vote(self):
         candidates = [belief[0] for belief in self.playerBeliefs if

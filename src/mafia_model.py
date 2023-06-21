@@ -1,22 +1,33 @@
 import random
 from kripke_model import KripkeModel, State, Proposition, Relation, Transition
 from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
+from mlsolver.model import Mafia
 
 
 class MafiaGame:
-    def __init__(self, villagers=10, mafiosi=3, doctors=1, informants=1):
+    def __init__(self, villagers=7, mafiosi=2, doctors=0, informants=1):
         self.kripke_model = KripkeModel(self)
-        
+        self.model = Mafia({"mafiosi": mafiosi, "villagers": villagers, "informants": informants})
         self.players = []
+        
         self.addPlayers(mafiosi, Mafioso)
         self.addPlayers(villagers, Villager)
         self.addPlayers(doctors, Doctor)
         self.addPlayers(informants, Informant)
+        
         self.alivePlayers = self.players
         self.deadPlayers = []
+        
+        self.currentWorld = ""
         for player in self.players:
+            self.currentWorld += player.role.name[0]
+        self.currentWorld = self.currentWorld.upper()
+        print("Actual world: " + self.currentWorld)
+        
+        for num, player in enumerate(self.players):
+            player.player_id = num
             player.alivePlayers = self.alivePlayers
-            player.initializeBeliefs()
+            player.initializeBeliefs(self.model, self.currentWorld)
             player.accusations = {player.name: 0 for player in self.players if player.role.name == 'MAFIOSO'}
 
     def addPlayers(self, count, Role):
