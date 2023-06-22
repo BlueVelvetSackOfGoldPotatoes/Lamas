@@ -22,6 +22,8 @@ class Mafia:
         print(f"The number of worlds in this Kripke model will be at most {world_count}.")
         
         worlds = self.generate_worlds(roles)
+        for world in worlds:
+            print(world)
         
         relations = self.generate_relations(worlds)
         #print(relations)

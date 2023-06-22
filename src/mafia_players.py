@@ -1,6 +1,7 @@
 import random
 
 from enum import Enum
+from mlsolver.formula import *
 
 # random.seed(42)
 
@@ -43,13 +44,12 @@ class Player:
         for player in self.alivePlayers:
             self.playerBeliefs.append((player, []))
         for relation in model.ks.relations[str(self.player_id)]:
-            if currentWorld in relation:
-                for world in relation:
-                    if world != currentWorld:
-                        for num, role in enumerate(world):
-                            actualRole = self.convertLetterToRole(role)
-                            if actualRole.name not in self.playerBeliefs[num][1]:
-                                self.playerBeliefs[num][1].append(actualRole.name)
+            if currentWorld == relation[0]:
+                for num, role in enumerate(relation[1]):
+                    actualRole = self.convertLetterToRole(role)
+                    if actualRole.name not in self.playerBeliefs[num][1]:
+                        self.playerBeliefs[num][1].append(actualRole.name)
+        
         
         '''
         for player in self.alivePlayers:
@@ -102,17 +102,20 @@ class Informant(Villager):
         self.role = Roles.INFORMANT
 
     def initializeBeliefs(self, model, currentWorld, target=None):
-        super().initializeBeliefs(model, currentWorld)
         # Informants know who one of the mafiosi is
         if target is None:
             mafiosi = [pl for pl in self.alivePlayers if isinstance(pl, Mafioso)]
             if not mafiosi:
                 print("No mafiosi for the informant to know about!")
+                super().initializeBeliefs(model, currentWorld)
                 return
             target = random.choice(mafiosi)
-        targetBelief = [belief for belief in self.playerBeliefs if belief[0] == target][0]
-        targetBelief[1].clear()
-        targetBelief[1].append(Roles.MAFIOSO.name)
+        newRelations = set()
+        for relation in model.ks.relations[str(self.player_id)]:
+            if relation[1][target.player_id] == 'M':
+                newRelations.add(relation)
+        model.ks.relations[str(self.player_id)] = newRelations
+        super().initializeBeliefs(model, currentWorld)
 
 
 class Mafioso(Player):
@@ -121,17 +124,21 @@ class Mafioso(Player):
         self.role = Roles.MAFIOSO
 
     def initializeBeliefs(self, model, currentWorld):
+        # Mafiosi know who the other mafiosi are.
+        # Therfore, update this mafioso's accessibility relations.
+        #mafiaFormula = Implies("phi is in the mafia", "this player knows that phi is in the mafia")
+        newRelations = set()
+        for relation in model.ks.relations[str(self.player_id)]:
+            print(relation)
+            add = True
+            for location in range(len(relation[0])):
+                if relation[0][location] == 'M' and relation[1][location] != 'M':
+                    add = False
+            if add:
+                newRelations.add(relation)
+        model.ks.relations[str(self.player_id)] = newRelations
         super().initializeBeliefs(model, currentWorld)
-        # Mafiosi know who the other mafiosi are
-        '''
-        for belief in self.playerBeliefs:
-            if belief[0].role == Roles.MAFIOSO:
-                for role in Roles:
-                    if role != Roles.MAFIOSO and role.name in belief[1]:
-                        belief[1].remove(role.name)
-            else:
-                belief[1].remove(Roles.MAFIOSO.name)
-        '''
+
 
     def vote(self):
         candidates = [belief[0] for belief in self.playerBeliefs if

@@ -11,7 +11,7 @@ from mafia_model import MafiaGame
 
 
 class MainWindow(tk.Tk):
-    def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
+    def __init__(self, villagers=7, mafiosi=2, doctors=0, informants=0, mafia_strategy='enemy'):
         super().__init__()
         self.villagers = villagers
         self.mafiosi = mafiosi
@@ -141,5 +141,5 @@ class MainWindow(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=7 , mafiosi=2, doctors=0, informants=1, mafia_strategy='enemy')
+    app = MainWindow(villagers=1 , mafiosi=2, doctors=0, informants=1, mafia_strategy='enemy')
     app.mainloop()

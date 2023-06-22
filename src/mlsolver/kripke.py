@@ -60,10 +60,13 @@ class KripkeStructure:
         worlds_by_name = []
         for w in self.worlds:
             worlds_by_name.append(w.name)
+        #print(worlds_by_name)
+        #print(f"Length: {len([combinations(worlds_by_name, r + 1) for r in range(len(worlds_by_name) + 1)])}")
         for z in chain.from_iterable(
                 combinations(worlds_by_name, r + 1)
                 for r in range(len(worlds_by_name) + 1)):
             sub_set.append(set(z))
+            #print(set(z))
         return sub_set
 
     def nodes_not_follow_formula(self, formula):

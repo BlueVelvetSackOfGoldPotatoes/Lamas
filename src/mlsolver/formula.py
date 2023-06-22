@@ -73,7 +73,7 @@ class Box_a:
 
     # TODO
     def __str__(self):
-        raise NotImplementedError
+        return f"{self.agent} knows {self.inner}"
 
 
 class Box_star:

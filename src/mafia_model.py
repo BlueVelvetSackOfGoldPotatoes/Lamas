@@ -5,7 +5,7 @@ from mlsolver.model import Mafia
 
 
 class MafiaGame:
-    def __init__(self, villagers=7, mafiosi=2, doctors=0, informants=1):
+    def __init__(self, villagers=1, mafiosi=1, doctors=0, informants=0):
         self.kripke_model = KripkeModel(self)
         self.model = Mafia({"mafiosi": mafiosi, "villagers": villagers, "informants": informants})
         self.players = []
@@ -26,9 +26,11 @@ class MafiaGame:
         
         for num, player in enumerate(self.players):
             player.player_id = num
+        for player in self.players:
             player.alivePlayers = self.alivePlayers
             player.initializeBeliefs(self.model, self.currentWorld)
             player.accusations = {player.name: 0 for player in self.players if player.role.name == 'MAFIOSO'}
+        
 
     def addPlayers(self, count, Role):
         for itr in range(count):
