@@ -40,7 +40,7 @@ class MafiaGame:
     def get_voting_priority(self, role):
         priority_players = []
         for player in self.alivePlayers:
-            if isinstance(player, Villager):
+            if player.role.name == 'VILLAGER':
                 # Revealed special roles have a higher priority to be killed
                 for belief in player.playerBeliefs:
                     if belief[0] in self.alivePlayers and belief[1] == role:
@@ -74,7 +74,7 @@ class MafiaGame:
     def protectedID_is_known(self, protected):
         """ This function is called only if at least one Doctor is alive. """
         for player in self.alivePlayers:
-            if isinstance(player, Villager) and player != protected:
+            if player.role.name == 'VILLAGER' and player != protected:
                 for belief in player.playerBeliefs:
                     if belief[0] == protected:
                         if 'MAFIOSO' not in belief[1]:
@@ -98,7 +98,7 @@ class MafiaGame:
             self.make_public_announcement()
         elif doctors_strategy == 'random' and len(self.protectedPLayers) > 0:
             # Reveal the Doctor(s) knowledge with a certain probability
-            if np.random.rand() > 0.5:
+            if np.random.rand() > 0.0:
                 # Make a public announcement
                 self.make_public_announcement()
 
@@ -108,13 +108,21 @@ class MafiaGame:
             print(f"Public Announcement: {player.name} is an innocent saved by the Doctor(s)!\n")
             player.updateKnowledge()
 
-        # Empty the protected players list
-        self.protectedPLayers = []
         # Reveal the identity of one alive Doctor
         candidate_doctors = [cand for cand in self.alivePlayers if isinstance(cand, Doctor)]
-        doctor = random.choice(candidate_doctors)
+        protected_doctors = [doctor for doctor in candidate_doctors if doctor in self.protectedPLayers]
+        if protected_doctors:
+            if len(protected_doctors) == 1:
+                doctor = protected_doctors[0]
+            elif len(protected_doctors) > 1:
+                doctor = random.choice(protected_doctors)
+        else:
+            doctor = random.choice(candidate_doctors)
+
         doctor.revealDoctor()
         print(f"The identity of {doctor.name} is now revealed!\n")
+        # Empty the protected players list
+        self.protectedPLayers = []
 
     def kill(self, player):
         self.alivePlayers.remove(player)
