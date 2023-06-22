@@ -1,5 +1,7 @@
 import random
 
+import numpy as np
+
 from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
 
 
@@ -12,6 +14,7 @@ class MafiaGame:
         self.addPlayers(informants, Informant)
         self.alivePlayers = self.players
         self.deadPlayers = []
+        self.protectedPLayers = []
         for player in self.players:
             player.alivePlayers = self.alivePlayers
             player.initializeBeliefs()
@@ -42,16 +45,62 @@ class MafiaGame:
 
         return villager
 
-    def protectPlayer(self):
-        """ This function is called only if at least one Doctor is alive. """
+    def choose_protected_player(self):
         # Choose one player to protect during the night phase
         candidates = [player for player in self.alivePlayers]
         protected = random.choice(candidates)
         return protected
 
+    def protectedID_is_known(self, protected):
+        """ This function is called only if at least one Doctor is alive. """
+        for player in self.alivePlayers:
+            if isinstance(player, Villager) and player != protected:
+                for belief in player.playerBeliefs:
+                    if belief[0] == protected:
+                        if 'MAFIOSO' not in belief[1]:
+                            return True
+                        else:
+                            return False
+
+    def savePlayer(self, protected):
+        """ This function is called only if at least one Doctor is alive. """
+        if protected not in self.protectedPLayers:
+            self.protectedPLayers.append(protected)
+        # Update the knowledge of Doctors about this player
+        for player in self.alivePlayers:
+            if isinstance(player, Doctor):
+                player.changeDoctorsKnowledge(protected)
+
+    def apply_doctors_strategy(self, doctors_strategy='deterministic', num_protectedPLayers=1):
+        """ This function is called only if at least one Doctor is alive. """
+        if doctors_strategy == 'deterministic' and len(self.protectedPLayers) == num_protectedPLayers:
+            # Make a public announcement
+            self.make_public_announcement()
+        elif doctors_strategy == 'random' and len(self.protectedPLayers) > 0:
+            # Reveal the Doctor(s) knowledge with a certain probability
+            if np.random.rand() > 0.5:
+                # Make a public announcement
+                self.make_public_announcement()
+
+    def make_public_announcement(self):
+        for player in self.protectedPLayers:
+            print("A Doctor will make a public announcement about the saved players!\n")
+            print(f"Public Announcement: {player.name} is an innocent saved by the Doctor(s)!\n")
+            player.updateKnowledge()
+
+        # Empty the protected players list
+        self.protectedPLayers = []
+        # Reveal the identity of one alive Doctor
+        candidate_doctors = [cand for cand in self.alivePlayers if isinstance(cand, Doctor)]
+        doctor = random.choice(candidate_doctors)
+        doctor.revealDoctor()
+        print(f"The identity of {doctor.name} is now revealed!\n")
+
     def kill(self, player):
         self.alivePlayers.remove(player)
         self.deadPlayers.append(player)
+        if player in self.protectedPLayers:
+            self.protectedPLayers.remove(player)
         player.die()
 
     def checkWin(self):

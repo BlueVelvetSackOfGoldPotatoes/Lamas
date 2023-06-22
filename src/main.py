@@ -11,13 +11,17 @@ from mafia_model import MafiaGame
 
 
 class MainWindow(tk.Tk):
-    def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy'):
+    def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1,
+                 mafia_strategy='enemy',
+                 doctors_strategy='deterministic', num_protectedPlayers=1):
         super().__init__()
         self.villagers = villagers
         self.mafiosi = mafiosi
         self.doctors = doctors
         self.informants = informants
         self.mafia_strategy = mafia_strategy
+        self.doctors_strategy = doctors_strategy
+        self.num_protectedPlayers = num_protectedPlayers
         self.game = None
         self.model = None
         self.votes = None
@@ -63,24 +67,29 @@ class MainWindow(tk.Tk):
             # In the first round, always kill randomly a villager during the night phase
             villager = self.game.voteVillager(mafia_strategy='random')
         else:
-            # In the rest rounds, follow a certain strategy
+            # In the rest rounds, follow a certain strategy to kill
             villager = self.game.voteVillager(mafia_strategy=self.mafia_strategy, votes=self.votes)
 
-        # If the doctor is alive, try to protect one player after the night phase
-        protected = self.game.protectPlayer()
+        # Choose a player to protect after the night phase
+        protected = self.game.choose_protected_player()
+        # Check whether the player that was killed will be indeed saved
         if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers] and villager == protected:
-            # Check if the player to be protected was the 'villager' killed in the night phase and protect him
-            print(f"{villager.name} was saved by the Doctor after the night phase!\n")
-            # Update the knowledge of Doctors about this player
-            for player in self.game.alivePlayers:
-                if player.role.name == 'DOCTOR':
-                    player.changeKnowledge(villager)
-            # Decide whether Doctor will let the rest players know about this gained knowledge
+            if self.game.protectedID_is_known(protected):
+                print(f"{villager.name} was saved by the Doctor(s) after the night phase, but it is already common "
+                      f"knowledge that he is innocent!\n")
+            else:
+                self.game.savePlayer(protected)
+                print(f"{villager.name} was saved by the Doctor(s) after the night phase!\n")
         else:
-            # Either the Doctor is not alive or the protected player is not the same that was killed
-            # Kill the villager and update the model
+            # Either the Doctor is not active, or the protected player is not the one that was killed
+            # Kill the innocent player and update the model
             self.game.kill(villager)
             print(f"{villager.name} was killed during the night phase!\n")
+
+        if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers]:
+            # Decide whether Doctor(s) will let the rest players know about their identity and knowledge
+            self.game.apply_doctors_strategy(doctors_strategy=self.doctors_strategy,
+                                             num_protectedPLayers=self.num_protectedPlayers)
 
         # The mafiosi might win the game by killing a villager at night
         win = self.game.checkWin()
@@ -149,5 +158,10 @@ class MainWindow(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=0, mafia_strategy='enemy')
+    """ mafia_strategy = {enemy, allied, random}
+        doctors_strategy = {deterministic, random} """
+
+    app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=0,
+                     mafia_strategy='enemy',
+                     doctors_strategy='random', num_protectedPlayers=2)
     app.mainloop()

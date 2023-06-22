@@ -55,6 +55,14 @@ class Player:
                     if 'MAFIOSO' in belief[1]:
                         belief[1].remove('MAFIOSO')
 
+    def revealDoctor(self):
+        for player in self.alivePlayers:
+            for belief in player.playerBeliefs:
+                if belief[0] == self:
+                    for role in Roles:
+                        if role != Roles.DOCTOR and role.name in belief[1]:
+                            belief[1].remove(role.name)
+
 
 class Villager(Player):
     def __init__(self):
@@ -116,16 +124,18 @@ class Doctor(Player):
         super().initializeBeliefs()
         # Doctors know who the other Doctors are
         for belief in self.playerBeliefs:
-            if belief[0].role == Roles.DOCTOR and belief[1] != ['DOCTOR']:
+            if belief[0].role == Roles.DOCTOR:
                 for role in Roles:
                     if role != Roles.DOCTOR and role.name in belief[1]:
                         belief[1].remove(role.name)
+            else:
+                belief[1].remove(Roles.DOCTOR.name)
 
     def suspectMafioso(self, candidate):
         self.accusations[candidate.name] += 1
 
-    def changeKnowledge(self, villager):
-        # After saving a player from the night phase, update the knowledge that he is a villager
+    def changeDoctorsKnowledge(self, villager):
+        # After saving a player from the night phase, update the knowledge that he is innocent
         for belief in self.playerBeliefs:
             if belief[0] == villager:
                 if 'MAFIOSO' in belief[1]:
