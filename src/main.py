@@ -87,7 +87,7 @@ class MainWindow(tk.Tk):
             print(f"{villager.name} was killed during the night phase!\n")
 
         if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers]:
-            # Decide whether Doctor(s) will let the rest players know about their identity and knowledge
+            # For this round, decide whether Doctor(s) will let the rest players know about their identity and knowledge
             self.game.apply_doctors_strategy(doctors_strategy=self.doctors_strategy,
                                              num_protectedPLayers=self.num_protectedPlayers)
 
@@ -163,5 +163,5 @@ if __name__ == '__main__':
 
     app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=0,
                      mafia_strategy='enemy',
-                     doctors_strategy='random', num_protectedPlayers=2)
+                     doctors_strategy='deterministic', num_protectedPlayers=1)
     app.mainloop()

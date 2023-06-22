@@ -25,25 +25,45 @@ class MafiaGame:
             self.players.append(Role())
             self.players[-1].name = f"{self.players[-1].role.name.capitalize()} {itr}"
 
-    def voteVillager(self,  mafia_strategy='random', votes=None):
+    def voteVillager(self, mafia_strategy='random', votes=None):
         # Night phase strategies
+        candidates = self.get_voting_priority(['DOCTOR'])
+        if not candidates:
+            candidates = self.get_voting_priority(['VILLAGER', 'DOCTOR', 'INFORMANT'])
+        if not candidates:
+            candidates = self.apply_mafia_strategy(mafia_strategy, votes)
+
+        villager = random.choice(candidates)
+
+        return villager
+
+    def get_voting_priority(self, role):
+        priority_players = []
+        for player in self.alivePlayers:
+            if isinstance(player, Villager):
+                # Revealed special roles have a higher priority to be killed
+                for belief in player.playerBeliefs:
+                    if belief[0] in self.alivePlayers and belief[1] == role:
+                        priority_players.append(belief[0])
+
+        return priority_players
+
+    def apply_mafia_strategy(self, mafia_strategy, votes):
         candidates = None
+
         if mafia_strategy == 'enemy':
             # Choose a villager who voted against mafia in the latest day phase
             candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and vote == 1]
         elif mafia_strategy == 'allied':
             # Choose a villager who supported mafia in the latest day phase
             candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and
-                          cand.role.name in ["VILLAGER", "DOCTOR", "INFORMANT"] and
-                          vote == 0]
+                          isinstance(cand, Villager) and vote == 0]
 
         if mafia_strategy == 'random' or not candidates:
             # Choose randomly a villager to kill
-            candidates = [cand for cand in self.alivePlayers if cand.role.name in ["VILLAGER", "DOCTOR", "INFORMANT"]]
+            candidates = [cand for cand in self.alivePlayers if isinstance(cand, Villager)]
 
-        villager = random.choice(candidates)
-
-        return villager
+        return candidates
 
     def choose_protected_player(self):
         # Choose one player to protect during the night phase
@@ -83,8 +103,8 @@ class MafiaGame:
                 self.make_public_announcement()
 
     def make_public_announcement(self):
+        print("A Doctor will make a public announcement about the saved players!\n")
         for player in self.protectedPLayers:
-            print("A Doctor will make a public announcement about the saved players!\n")
             print(f"Public Announcement: {player.name} is an innocent saved by the Doctor(s)!\n")
             player.updateKnowledge()
 
@@ -99,8 +119,7 @@ class MafiaGame:
     def kill(self, player):
         self.alivePlayers.remove(player)
         self.deadPlayers.append(player)
-        if player in self.protectedPLayers:
-            self.protectedPLayers.remove(player)
+        self.protectedPLayers.remove(player) if player in self.protectedPLayers else None
         player.die()
 
     def checkWin(self):
