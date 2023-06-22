@@ -129,7 +129,7 @@ class Mafioso(Player):
         #mafiaFormula = Implies("phi is in the mafia", "this player knows that phi is in the mafia")
         newRelations = set()
         for relation in model.ks.relations[str(self.player_id)]:
-            print(relation)
+            #print(relation)
             add = True
             for location in range(len(relation[0])):
                 if relation[0][location] == 'M' and relation[1][location] != 'M':
