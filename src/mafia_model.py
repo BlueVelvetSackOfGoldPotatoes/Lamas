@@ -98,7 +98,7 @@ class MafiaGame:
             self.make_public_announcement()
         elif doctors_strategy == 'random' and len(self.protectedPLayers) > 0:
             # Reveal the Doctor(s) knowledge with a certain probability
-            if np.random.rand() > 0.0:
+            if np.random.rand() > 0.5:
                 # Make a public announcement
                 self.make_public_announcement()
 
