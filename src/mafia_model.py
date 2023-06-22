@@ -7,7 +7,7 @@ from mlsolver.model import Mafia
 class MafiaGame:
     def __init__(self, villagers=1, mafiosi=1, doctors=0, informants=0):
         self.kripke_model = KripkeModel(self)
-        self.model = Mafia({"mafiosi": mafiosi, "villagers": villagers, "informants": informants})
+        self.model = Mafia({"mafiosi": mafiosi, "villagers": villagers, "informants": informants, "doctors": doctors})
         self.players = []
         
         self.addPlayers(mafiosi, Mafioso)
@@ -26,6 +26,8 @@ class MafiaGame:
         
         for num, player in enumerate(self.players):
             player.player_id = num
+            player.model = self.model
+            player.currentWorld = self.currentWorld
         for player in self.players:
             player.alivePlayers = self.alivePlayers
             player.initializeBeliefs(self.model, self.currentWorld)
@@ -48,11 +50,11 @@ class MafiaGame:
             candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and vote == 1]
         elif mafia_strategy == 'allied':
             # Choose a villager who supported mafia in the latest day phase
-            candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and cand.role.name == "VILLAGER" and vote == 0]
+            candidates = [cand for cand, vote in votes.items() if cand in self.alivePlayers and isinstance(cand, Villager) and vote == 0]
 
         if mafia_strategy == 'random' or not candidates:
             # Choose randomly a villager to kill
-            candidates = [cand for cand in self.alivePlayers if cand.role.name == "VILLAGER"]
+            candidates = [cand for cand in self.alivePlayers if isinstance(cand, Villager)]
 
         villager = random.choice(candidates)
 
@@ -63,7 +65,7 @@ class MafiaGame:
         self.deadPlayers.append(player)
         player.die()
         
-        # Update Kripke model after player is killed
+        # Update Legacy Kripke model after player is killed
         self.kripke_model.build_model()
 
     def checkWin(self):

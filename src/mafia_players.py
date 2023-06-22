@@ -17,12 +17,15 @@ class Player:
     def __init__(self, name="Player"):
         self.role = None
         self.alivePlayers = []
+        self.players = []
         self.deadPlayers = []
         self.playerBeliefs = []  # List of tuples (player, list of beliefs)
         self.name = name
         self.kripke_model = None  # Will be set by MafiaGame
         self.player_id = None # Will be set by MafiaGame
         self.cached_roles = None  # Will be set by KripkeModel
+        self.model = None # Will be set by MafiaGame
+        self.currentWorld = None # Will be set by MafiaGame
 
     def print_state(self):
         print(f"Name: {self.name}")
@@ -39,26 +42,10 @@ class Player:
         return None
 
     def initializeBeliefs(self, model, currentWorld):
-        num_players = len(currentWorld)
-        self.playerBeliefs = []
         for player in self.alivePlayers:
-            self.playerBeliefs.append((player, []))
-        for relation in model.ks.relations[str(self.player_id)]:
-            if currentWorld == relation[0]:
-                for num, role in enumerate(relation[1]):
-                    actualRole = self.convertLetterToRole(role)
-                    if actualRole.name not in self.playerBeliefs[num][1]:
-                        self.playerBeliefs[num][1].append(actualRole.name)
+            self.players.append(player)
+        self.readKripkeModel()
         
-        
-        '''
-        for player in self.alivePlayers:
-            if player == self:
-                self.playerBeliefs.append((player, [self.role.name]))
-            else:
-                self.playerBeliefs.append((player, [role.name for role in Roles]))
-        '''
-
     def vote(self):
         # Use the Kripke model to inform the voting strategy
         candidates = [belief[0] for belief in self.playerBeliefs if
@@ -70,11 +57,20 @@ class Player:
         return random.choice(candidates)
 
     def die(self):
+        roleLetter = self.role.name[0]
         for player in self.alivePlayers:
+            newRelations = set()
+            for relation in self.model.ks.relations[str(player.player_id)]:
+                if relation[1][self.player_id] == roleLetter:
+                    newRelations.add(relation)
+            self.model.ks.relations[str(player.player_id)] = newRelations
+            player.readKripkeModel()
+            '''
             for belief in player.playerBeliefs:
                 if belief[0] == self:
                     belief[1].clear()
                     belief[1].append(self.role.name)
+            '''
 
     def updateBeliefs(self, deceased):
         for belief in self.playerBeliefs:
@@ -85,6 +81,19 @@ class Player:
             elif deceased.role == Roles.MAFIOSO:
                 if 'MAFIOSO' in belief[1]:
                     belief[1].remove('MAFIOSO')
+                    
+    
+    def readKripkeModel(self):
+        num_players = len(self.currentWorld)
+        self.playerBeliefs = []
+        for player in self.players:
+            self.playerBeliefs.append((player, []))
+        for relation in self.model.ks.relations[str(self.player_id)]:
+            if self.currentWorld == relation[0]:
+                for num, role in enumerate(relation[1]):
+                    actualRole = self.convertLetterToRole(role)
+                    if actualRole.name not in self.playerBeliefs[num][1]:
+                        self.playerBeliefs[num][1].append(actualRole.name)
 
 
 class Villager(Player):
@@ -154,7 +163,7 @@ class Mafioso(Player):
         super().updateBeliefs(deceased)
 
 
-class Doctor(Player):
+class Doctor(Villager):
     def __init__(self):
         super().__init__()
         self.role = Roles.DOCTOR
@@ -163,6 +172,3 @@ class Doctor(Player):
         candidates = [player for player in self.alivePlayers if player != self]
         protected = random.choice(candidates)
         return protected
-
-    def suspectMafioso(self, player, candidate):
-        player.accusations[candidate.name] += 1

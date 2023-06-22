@@ -81,8 +81,8 @@ class MainWindow(tk.Tk):
             return
         
         # Update player beliefs..
-        for player in self.game.alivePlayers:
-            player.updateBeliefs(villager)
+        #for player in self.game.alivePlayers:
+            #player.updateBeliefs(villager)
 
         # Perform a round of day phase
         voteCount = {}
@@ -117,8 +117,8 @@ class MainWindow(tk.Tk):
         for player in self.game.players:
             print(f"{player.name} correctly suspects {player.accusations}")
         
-        for player in self.game.alivePlayers:
-            player.updateBeliefs(maxPlayer)
+        #for player in self.game.alivePlayers:
+            #player.updateBeliefs(maxPlayer)
 
         self.model.build_model()
         self.model.draw_model(iteration)
@@ -141,5 +141,5 @@ class MainWindow(tk.Tk):
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=1 , mafiosi=2, doctors=0, informants=1, mafia_strategy='enemy')
+    app = MainWindow(villagers=6 , mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy')
     app.mainloop()
