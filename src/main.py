@@ -102,7 +102,8 @@ class MainWindow(tk.Tk):
             return
 
         # Check whether the Informant will reveal the identity of the one known mafia member
-        self.game.apply_informant_strategy(informant_strategy=self.informant_strategy)
+        if not self.game.revealedMafioso:
+            self.game.apply_informant_strategy(informant_strategy=self.informant_strategy)
 
         # Perform a round of day phase
         voteCount = {}

@@ -2,7 +2,7 @@ import random
 
 import numpy as np
 
-from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
+from mafia_players import Mafioso, Villager, Doctor, Informant
 
 
 class MafiaGame:
@@ -132,9 +132,10 @@ class MafiaGame:
         player.die()
 
     def apply_informant_strategy(self, informant_strategy='random'):
-        if not self.revealedMafioso:
-            known_mafioso = self.find_mafioso()
-            if informant_strategy == 'deterministic':
+        known_mafioso = self.find_mafioso()
+        alive_mafiosi = [cand for cand in self.alivePlayers if isinstance(cand, Mafioso)]
+        if known_mafioso in alive_mafiosi:
+            if len(alive_mafiosi) == 1 or informant_strategy == 'deterministic':
                 print(f"Public announcement of Informant: The player {known_mafioso.name} is a Mafioso!\n")
                 known_mafioso.revealMafioso()
                 self.revealedMafioso = True
