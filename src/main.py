@@ -12,7 +12,7 @@ from mafia_model import MafiaGame
 
 class MainWindow(tk.Tk):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1,
-                 mafia_strategy='enemy',
+                 mafia_strategy='enemy', informant_strategy='random',
                  doctors_strategy='deterministic', num_protectedPlayers=1):
         super().__init__()
         self.villagers = villagers
@@ -20,6 +20,7 @@ class MainWindow(tk.Tk):
         self.doctors = doctors
         self.informants = informants
         self.mafia_strategy = mafia_strategy
+        self.informant_strategy = informant_strategy
         self.doctors_strategy = doctors_strategy
         self.num_protectedPlayers = num_protectedPlayers
         self.game = None
@@ -100,6 +101,9 @@ class MainWindow(tk.Tk):
             messagebox.showinfo("Game Over", "Tie!")
             return
 
+        # Check whether the Informant will reveal the identity of the one known mafia member
+        self.game.apply_informant_strategy(informant_strategy=self.informant_strategy)
+
         # Perform a round of day phase
         voteCount = {}
         self.votes = {}
@@ -161,7 +165,7 @@ if __name__ == '__main__':
     """ mafia_strategy = {enemy, allied, random}
         doctors_strategy = {deterministic, random} """
 
-    app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=0,
-                     mafia_strategy='enemy',
+    app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=1,
+                     mafia_strategy='enemy', informant_strategy='random',
                      doctors_strategy='deterministic', num_protectedPlayers=1)
     app.mainloop()

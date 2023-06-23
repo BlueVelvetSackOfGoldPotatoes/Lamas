@@ -34,6 +34,11 @@ class Player:
                 self.playerBeliefs.append((player, [role.name for role in Roles]))
 
     def vote(self):
+        suspected_mafioso = [belief[0] for belief in self.playerBeliefs if
+                             (belief[0] in self.alivePlayers and ["MAFIOSO"] == belief[1])]
+        if suspected_mafioso:
+            return suspected_mafioso[0]
+
         candidates = [belief[0] for belief in self.playerBeliefs if
                       (belief[0] in self.alivePlayers and "MAFIOSO" in belief[1])]
         # Vote for a random possible mafioso
@@ -75,6 +80,14 @@ class Mafioso(Player):
                       (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
         # Vote for a random villager who is not in the mafia
         return random.choice(candidates)
+
+    def revealMafioso(self):
+        for player in self.alivePlayers:
+            for belief in player.playerBeliefs:
+                if belief[0] == self:
+                    for role in Roles:
+                        if role != Roles.MAFIOSO and role.name in belief[1]:
+                            belief[1].remove(role.name)
 
 
 class Villager(Player):

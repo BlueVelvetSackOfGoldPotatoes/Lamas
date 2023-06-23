@@ -15,6 +15,7 @@ class MafiaGame:
         self.alivePlayers = self.players
         self.deadPlayers = []
         self.protectedPLayers = []
+        self.revealedMafioso = False
         for player in self.players:
             player.alivePlayers = self.alivePlayers
             player.initializeBeliefs()
@@ -105,7 +106,7 @@ class MafiaGame:
     def make_public_announcement(self):
         print("A Doctor will make a public announcement about the saved players!\n")
         for player in self.protectedPLayers:
-            print(f"Public Announcement: {player.name} is an innocent saved by the Doctor(s)!\n")
+            print(f"Public Announcement of Doctor(s): {player.name} is an innocent saved by the Doctor(s)!\n")
             player.updateKnowledge()
 
         # Reveal the identity of one alive Doctor
@@ -129,6 +130,27 @@ class MafiaGame:
         self.deadPlayers.append(player)
         self.protectedPLayers.remove(player) if player in self.protectedPLayers else None
         player.die()
+
+    def apply_informant_strategy(self, informant_strategy='random'):
+        if not self.revealedMafioso:
+            known_mafioso = self.find_mafioso()
+            if informant_strategy == 'deterministic':
+                print(f"Public announcement of Informant: The player {known_mafioso.name} is a Mafioso!\n")
+                known_mafioso.revealMafioso()
+                self.revealedMafioso = True
+            elif informant_strategy == 'random':
+                # Reveal the identity of one mafia member with a certain probability
+                if np.random.rand() > 0.5:
+                    print(f"Public announcement of Informant: The player {known_mafioso.name} is a Mafioso!\n")
+                    known_mafioso.revealMafioso()
+                    self.revealedMafioso = True
+
+    def find_mafioso(self):
+        for player in self.alivePlayers:
+            if isinstance(player, Informant):
+                for belief in player.playerBeliefs:
+                    if isinstance(belief[0], Mafioso) and belief[1] == ['MAFIOSO']:
+                        return belief[0]
 
     def checkWin(self):
         mafiosoCount = 0
