@@ -11,13 +11,18 @@ from mafia_model import MafiaGame
 
 
 class MainWindow(tk.Tk):
-    def __init__(self, villagers=7, mafiosi=2, doctors=0, informants=0, mafia_strategy='enemy'):
+    def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1,
+                 mafia_strategy='enemy', informant_strategy='random',
+                 doctors_strategy='deterministic', num_protectedPlayers=1):
         super().__init__()
         self.villagers = villagers
         self.mafiosi = mafiosi
         self.doctors = doctors
         self.informants = informants
         self.mafia_strategy = mafia_strategy
+        self.informant_strategy = informant_strategy
+        self.doctors_strategy = doctors_strategy
+        self.num_protectedPlayers = num_protectedPlayers
         self.game = None
         self.model = None
         self.votes = None
@@ -44,7 +49,8 @@ class MainWindow(tk.Tk):
         self.players_label.pack()
 
     def start_game(self):
-        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors, informants=self.informants)
+        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors,
+                              informants=self.informants)
         self.totalPlayers = len(self.game.players)
         self.model = KripkeModel(self.game)
         for player in self.game.players:
@@ -64,12 +70,30 @@ class MainWindow(tk.Tk):
             # In the first round, always kill randomly a villager during the night phase
             villager = self.game.voteVillager(mafia_strategy='random')
         else:
-            # In the rest rounds, follow a certain strategy
+            # In the rest rounds, follow a certain strategy to kill
             villager = self.game.voteVillager(mafia_strategy=self.mafia_strategy, votes=self.votes)
 
-        # Kill the villager and update the model
-        self.game.kill(villager)
-        print(f"{villager.name} was killed during the night phase!\n")
+        # Choose a player to protect after the night phase
+        protected = self.game.choose_protected_player()
+        print(f"The doctors, if present, choose to protect {protected.name}.")
+        # Check whether the player that was killed will be indeed saved
+        if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers] and villager == protected:
+            if self.game.protectedID_is_known(protected):
+                print(f"{villager.name} was saved by the Doctor(s) after the night phase, but it is already common "
+                      f"knowledge that he is innocent!\n")
+            else:
+                self.game.savePlayer(protected)
+                print(f"{villager.name} was saved by the Doctor(s) after the night phase!\n")
+        else:
+            # Either the Doctor is not active, or the protected player is not the one that was killed
+            # Kill the innocent player and update the model
+            self.game.kill(villager)
+            print(f"{villager.name} was killed during the night phase!\n")
+
+        if 'DOCTOR' in [player.role.name for player in self.game.alivePlayers]:
+            # For this round, decide whether Doctor(s) will let the rest players know about their identity and knowledge
+            self.game.apply_doctors_strategy(doctors_strategy=self.doctors_strategy,
+                                             num_protectedPLayers=self.num_protectedPlayers)
 
         # The mafiosi might win the game by killing a villager at night
         win = self.game.checkWin()
@@ -80,9 +104,11 @@ class MainWindow(tk.Tk):
             messagebox.showinfo("Game Over", "Tie!")
             return
         
-        # Update player beliefs..
-        #for player in self.game.alivePlayers:
-            #player.updateBeliefs(villager)
+        '''
+        # Check whether the Informant will reveal the identity of the one known mafia member
+        if not self.game.revealedMafioso:
+            self.game.apply_informant_strategy(informant_strategy=self.informant_strategy)
+        '''
 
         # Perform a round of day phase
         voteCount = {}
@@ -98,7 +124,7 @@ class MainWindow(tk.Tk):
 
             if vote.role.name == 'MAFIOSO':
                 # Keep track of the votes against true Mafia members
-                player.suspectMafioso(player, vote)
+                player.suspectMafioso(vote)
                 self.votes[player] = 1
             else:
                 self.votes[player] = 0
@@ -117,8 +143,12 @@ class MainWindow(tk.Tk):
         for player in self.game.players:
             print(f"{player.name} correctly suspects {player.accusations}")
         
-        #for player in self.game.alivePlayers:
-            #player.updateBeliefs(maxPlayer)
+        if maxPlayer.role.name == 'MAFIOSO':
+            # Update players' beliefs if a Mafia member is eliminated
+            for player in self.game.players:
+                if player.accusations[maxPlayer.name] >= 1:
+                    print(f"{player.name} correctly suspected {maxPlayer.name}!")
+                    player.updateKnowledge()
 
         self.model.build_model()
         self.model.draw_model(iteration)
@@ -133,13 +163,16 @@ class MainWindow(tk.Tk):
         if win:
             messagebox.showinfo("Game Over", f"{win} win!")
             return
-        #elif len(self.game.alivePlayers) <= 2:
-            #messagebox.showinfo("Game Over", "Tie!")
-            #return
         else:
             self.after(500, self.playMafia, iteration + 1)
 
 
 if __name__ == '__main__':
-    app = MainWindow(villagers=6 , mafiosi=2, doctors=1, informants=1, mafia_strategy='enemy')
+    """ mafia_strategy = {enemy, allied, random}
+        informant_strategy = {deterministic, random} 
+        doctors_strategy = {deterministic, random} """
+
+    app = MainWindow(villagers=3, mafiosi=2, doctors=2, informants=1,
+                     mafia_strategy='enemy', informant_strategy='random',
+                     doctors_strategy='deterministic', num_protectedPlayers=1)
     app.mainloop()

@@ -3,8 +3,6 @@ import random
 from enum import Enum
 from mlsolver.formula import *
 
-# random.seed(42)
-
 
 class Roles(Enum):
     VILLAGER = 0
@@ -41,19 +39,20 @@ class Player:
                 return role
         return None
 
-    def initializeBeliefs(self, model, currentWorld):
+    def initializeBeliefs(self):
         for player in self.alivePlayers:
             self.players.append(player)
         self.readKripkeModel()
         
     def vote(self):
-        # Use the Kripke model to inform the voting strategy
+        suspected_mafioso = [belief[0] for belief in self.playerBeliefs if
+                             (belief[0] in self.alivePlayers and ["MAFIOSO"] == belief[1])]
+        if suspected_mafioso:
+            return suspected_mafioso[0]
+
         candidates = [belief[0] for belief in self.playerBeliefs if
-                      (belief[0] in self.alivePlayers and "MAFIOSO" in self.kripke_model.get_possible_roles(belief[0]))]
-        if not candidates:
-            # Fall back to random voting if there are no candidates whom the Kripke model thinks could be a mafioso
-            candidates = [player for player in self.alivePlayers if player != self]
-        # Vote for a random candidate
+                      (belief[0] in self.alivePlayers and "MAFIOSO" in belief[1])]
+        # Vote for a random possible mafioso
         return random.choice(candidates)
 
     def die(self):
@@ -65,23 +64,34 @@ class Player:
                     newRelations.add(relation)
             self.model.ks.relations[str(player.player_id)] = newRelations
             player.readKripkeModel()
-            '''
-            for belief in player.playerBeliefs:
-                if belief[0] == self:
-                    belief[1].clear()
-                    belief[1].append(self.role.name)
-            '''
+            
+    def updateKnowledge(self):
+        for player in self.alivePlayers:
+            player.updateRelations(lambda relation: relation[1][self.player_id] != 'M')
 
-    def updateBeliefs(self, deceased):
-        for belief in self.playerBeliefs:
-            if belief[0] == deceased:
-                belief[1].clear()
-                belief[1].append(deceased.role.name)
-
-            elif deceased.role == Roles.MAFIOSO:
-                if 'MAFIOSO' in belief[1]:
-                    belief[1].remove('MAFIOSO')
-                    
+    def revealPlayerID(self):
+        for player in self.alivePlayers:
+            player.updateRelations(lambda relation: relation[1][self.player_id] == self.role.name[0])
+            
+    def updateRelations(self, func):
+        newRelations = set()
+        for relation in self.model.ks.relations[str(self.player_id)]:
+            if func(relation):
+                newRelations.add(relation)
+        self.model.ks.relations[str(self.player_id)] = newRelations
+        self.readKripkeModel()
+        
+    def mafiaMembersKnown(self, relation):
+        for location in range(len(relation[0])):
+            if relation[0][location] == 'M' and relation[1][location] != 'M':
+                return False
+        return True
+        
+    def doctorsKnown(self, relation):
+        for location in range(len(relation[0])):
+            if relation[0][location] == 'D' and relation[1][location] != 'D':
+                return False
+        return True
     
     def readKripkeModel(self):
         num_players = len(self.currentWorld)
@@ -99,10 +109,11 @@ class Player:
 class Villager(Player):
     def __init__(self):
         super().__init__()
-        self.role = Roles.VILLAGER
+        self.role = Roles.VILLAGER 
+        self.accusations = None
 
-    def suspectMafioso(self, player, candidate):
-        player.accusations[candidate.name] += 1
+    def suspectMafioso(self, candidate):
+        self.accusations[candidate.name] += 1
 
 
 class Informant(Villager):
@@ -110,7 +121,7 @@ class Informant(Villager):
         super().__init__()
         self.role = Roles.INFORMANT
 
-    def initializeBeliefs(self, model, currentWorld, target=None):
+    def initializeBeliefs(self, target=None):
         # Informants know who one of the mafiosi is
         if target is None:
             mafiosi = [pl for pl in self.alivePlayers if isinstance(pl, Mafioso)]
@@ -119,12 +130,8 @@ class Informant(Villager):
                 super().initializeBeliefs(model, currentWorld)
                 return
             target = random.choice(mafiosi)
-        newRelations = set()
-        for relation in model.ks.relations[str(self.player_id)]:
-            if relation[1][target.player_id] == 'M':
-                newRelations.add(relation)
-        model.ks.relations[str(self.player_id)] = newRelations
-        super().initializeBeliefs(model, currentWorld)
+        super().initializeBeliefs()
+        self.updateRelations(lambda relation: relation[1][target.player_id] == 'M')
 
 
 class Mafioso(Player):
@@ -132,35 +139,17 @@ class Mafioso(Player):
         super().__init__()
         self.role = Roles.MAFIOSO
 
-    def initializeBeliefs(self, model, currentWorld):
+    def initializeBeliefs(self):
         # Mafiosi know who the other mafiosi are.
         # Therfore, update this mafioso's accessibility relations.
-        #mafiaFormula = Implies("phi is in the mafia", "this player knows that phi is in the mafia")
-        newRelations = set()
-        for relation in model.ks.relations[str(self.player_id)]:
-            #print(relation)
-            add = True
-            for location in range(len(relation[0])):
-                if relation[0][location] == 'M' and relation[1][location] != 'M':
-                    add = False
-            if add:
-                newRelations.add(relation)
-        model.ks.relations[str(self.player_id)] = newRelations
-        super().initializeBeliefs(model, currentWorld)
-
+        super().initializeBeliefs()
+        self.updateRelations(self.mafiaMembersKnown)
 
     def vote(self):
         candidates = [belief[0] for belief in self.playerBeliefs if
                       (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
         # Vote for a random villager who is not in the mafia
         return random.choice(candidates)
-    
-    def updateBeliefs(self, deceased):
-        # Mafioso don't need to update their beliefs about other mafioso's roles
-        if deceased.role == Roles.MAFIOSO:
-            return
-
-        super().updateBeliefs(deceased)
 
 
 class Doctor(Villager):
@@ -168,7 +157,11 @@ class Doctor(Villager):
         super().__init__()
         self.role = Roles.DOCTOR
 
-    def protect(self):
-        candidates = [player for player in self.alivePlayers if player != self]
-        protected = random.choice(candidates)
-        return protected
+    def initializeBeliefs(self):
+        # Doctors know who the other Doctors are
+        super().initializeBeliefs()
+        self.updateRelations(self.doctorsKnown)
+
+    def changeDoctorsKnowledge(self, villager):
+        # After saving a player from the night phase, update the knowledge that he is innocent
+        self.updateRelations(lambda relation: relation[1][villager.player_id] != 'M')
