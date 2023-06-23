@@ -120,7 +120,7 @@ class MafiaGame:
         else:
             doctor = random.choice(candidate_doctors)
 
-        doctor.revealDoctor()
+        doctor.revealPlayerID()
         print(f"The identity of {doctor.name} is now revealed!\n")
         # Empty the protected players list
         self.protectedPLayers = []
@@ -132,18 +132,20 @@ class MafiaGame:
         player.die()
 
     def apply_informant_strategy(self, informant_strategy='random'):
-        known_mafioso = self.find_mafioso()
+        known_mafioso, informant = self.find_mafioso()
         alive_mafiosi = [cand for cand in self.alivePlayers if isinstance(cand, Mafioso)]
         if known_mafioso in alive_mafiosi:
             if len(alive_mafiosi) == 1 or informant_strategy == 'deterministic':
                 print(f"Public announcement of Informant: The player {known_mafioso.name} is a Mafioso!\n")
-                known_mafioso.revealMafioso()
+                known_mafioso.revealPlayerID()
+                informant.revealPlayerID()
                 self.revealedMafioso = True
             elif informant_strategy == 'random':
                 # Reveal the identity of one mafia member with a certain probability
                 if np.random.rand() > 0.5:
                     print(f"Public announcement of Informant: The player {known_mafioso.name} is a Mafioso!\n")
-                    known_mafioso.revealMafioso()
+                    known_mafioso.revealPlayerID()
+                    informant.revealPlayerID()
                     self.revealedMafioso = True
 
     def find_mafioso(self):
@@ -151,7 +153,9 @@ class MafiaGame:
             if isinstance(player, Informant):
                 for belief in player.playerBeliefs:
                     if isinstance(belief[0], Mafioso) and belief[1] == ['MAFIOSO']:
-                        return belief[0]
+                        return belief[0], player
+
+        return None, None
 
     def checkWin(self):
         mafiosoCount = 0

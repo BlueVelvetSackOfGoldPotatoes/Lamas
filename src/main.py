@@ -164,9 +164,10 @@ class MainWindow(tk.Tk):
 
 if __name__ == '__main__':
     """ mafia_strategy = {enemy, allied, random}
+        informant_strategy = {deterministic, random} 
         doctors_strategy = {deterministic, random} """
 
-    app = MainWindow(villagers=10, mafiosi=2, doctors=2, informants=1,
+    app = MainWindow(villagers=7, mafiosi=2, doctors=2, informants=1,
                      mafia_strategy='enemy', informant_strategy='random',
                      doctors_strategy='deterministic', num_protectedPlayers=1)
     app.mainloop()

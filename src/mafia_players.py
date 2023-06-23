@@ -58,6 +58,14 @@ class Player:
                     if 'MAFIOSO' in belief[1]:
                         belief[1].remove('MAFIOSO')
 
+    def revealPlayerID(self):
+        for player in self.alivePlayers:
+            for belief in player.playerBeliefs:
+                if belief[0] == self:
+                    for role in Roles:
+                        if role != self.role and role.name in belief[1]:
+                            belief[1].remove(role.name)
+
 
 class Mafioso(Player):
     def __init__(self):
@@ -80,14 +88,6 @@ class Mafioso(Player):
                       (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
         # Vote for a random villager who is not in the mafia
         return random.choice(candidates)
-
-    def revealMafioso(self):
-        for player in self.alivePlayers:
-            for belief in player.playerBeliefs:
-                if belief[0] == self:
-                    for role in Roles:
-                        if role != Roles.MAFIOSO and role.name in belief[1]:
-                            belief[1].remove(role.name)
 
 
 class Villager(Player):
@@ -141,11 +141,3 @@ class Doctor(Villager):
             if belief[0] == villager:
                 if 'MAFIOSO' in belief[1]:
                     belief[1].remove('MAFIOSO')
-
-    def revealDoctor(self):
-        for player in self.alivePlayers:
-            for belief in player.playerBeliefs:
-                if belief[0] == self:
-                    for role in Roles:
-                        if role != Roles.DOCTOR and role.name in belief[1]:
-                            belief[1].remove(role.name)
