@@ -1,5 +1,5 @@
 import random
-from kripke_model import KripkeModel, State, Proposition, Relation, Transition
+from kripke_model import KripkeModel
 from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
 from mlsolver.model import Mafia
 import numpy as np

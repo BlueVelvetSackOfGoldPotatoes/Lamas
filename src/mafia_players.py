@@ -19,9 +19,7 @@ class Player:
         self.deadPlayers = []
         self.playerBeliefs = []  # List of tuples (player, list of beliefs)
         self.name = name
-        self.kripke_model = None  # Will be set by MafiaGame
         self.player_id = None # Will be set by MafiaGame
-        self.cached_roles = None  # Will be set by KripkeModel
         self.model = None # Will be set by MafiaGame
         self.currentWorld = None # Will be set by MafiaGame
 
