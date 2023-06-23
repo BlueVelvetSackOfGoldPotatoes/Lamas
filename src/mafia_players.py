@@ -3,8 +3,6 @@ import random
 from enum import Enum
 from mlsolver.formula import *
 
-# random.seed(42)
-
 
 class Roles(Enum):
     VILLAGER = 0
@@ -48,11 +46,17 @@ class Player:
         
     def vote(self):
         # Use the Kripke model to inform the voting strategy
+        suspected_mafioso = [belief[0] for belief in self.playerBeliefs if
+                             (belief[0] in self.alivePlayers and ["MAFIOSO"] == belief[1])]
+        if suspected_mafioso:
+            return suspected_mafioso[0]
+
         candidates = [belief[0] for belief in self.playerBeliefs if
                       (belief[0] in self.alivePlayers and "MAFIOSO" in self.kripke_model.get_possible_roles(belief[0]))]
         if not candidates:
             # Fall back to random voting if there are no candidates whom the Kripke model thinks could be a mafioso
             candidates = [player for player in self.alivePlayers if player != self]
+            print(f"{self.name} knows of no potential mafiosi to vote on for!")
         # Vote for a random candidate
         return random.choice(candidates)
 
@@ -95,14 +99,46 @@ class Player:
                     if actualRole.name not in self.playerBeliefs[num][1]:
                         self.playerBeliefs[num][1].append(actualRole.name)
 
+    def revealPlayerID(self):
+        for player in self.alivePlayers:
+            for belief in player.playerBeliefs:
+                if belief[0] == self:
+                    for role in Roles:
+                        if role != self.role and role.name in belief[1]:
+                            belief[1].remove(role.name)
+
+
+class Mafioso(Player):
+    def __init__(self):
+        super().__init__()
+        self.role = Roles.MAFIOSO
+
+    def initializeBeliefs(self):
+        super().initializeBeliefs()
+        # Mafiosi know who the other mafiosi are
+        for belief in self.playerBeliefs:
+            if belief[0].role == Roles.MAFIOSO:
+                for role in Roles:
+                    if role != Roles.MAFIOSO and role.name in belief[1]:
+                        belief[1].remove(role.name)
+            else:
+                belief[1].remove(Roles.MAFIOSO.name)
+
+    def vote(self):
+        candidates = [belief[0] for belief in self.playerBeliefs if
+                      (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
+        # Vote for a random villager who is not in the mafia
+        return random.choice(candidates)
+
 
 class Villager(Player):
     def __init__(self):
         super().__init__()
         self.role = Roles.VILLAGER
+        self.accusations = None
 
-    def suspectMafioso(self, player, candidate):
-        player.accusations[candidate.name] += 1
+    def suspectMafioso(self, candidate):
+        self.accusations[candidate.name] += 1
 
 
 class Informant(Villager):
@@ -127,11 +163,12 @@ class Informant(Villager):
         super().initializeBeliefs(model, currentWorld)
 
 
-class Mafioso(Player):
+class Doctor(Villager):
     def __init__(self):
         super().__init__()
-        self.role = Roles.MAFIOSO
+        self.role = Roles.DOCTOR
 
+<<<<<<< HEAD
     def initializeBeliefs(self, model, currentWorld):
         # Mafiosi know who the other mafiosi are.
         # Therfore, update this mafioso's accessibility relations.
@@ -172,3 +209,22 @@ class Doctor(Villager):
         candidates = [player for player in self.alivePlayers if player != self]
         protected = random.choice(candidates)
         return protected
+=======
+    def initializeBeliefs(self):
+        super().initializeBeliefs()
+        # Doctors know who the other Doctors are
+        for belief in self.playerBeliefs:
+            if belief[0].role == Roles.DOCTOR:
+                for role in Roles:
+                    if role != Roles.DOCTOR and role.name in belief[1]:
+                        belief[1].remove(role.name)
+            else:
+                belief[1].remove(Roles.DOCTOR.name)
+
+    def changeDoctorsKnowledge(self, villager):
+        # After saving a player from the night phase, update the knowledge that he is innocent
+        for belief in self.playerBeliefs:
+            if belief[0] == villager:
+                if 'MAFIOSO' in belief[1]:
+                    belief[1].remove('MAFIOSO')
+>>>>>>> strategies
