@@ -12,6 +12,7 @@ import networkx as nx
 
 from kripke_model import KripkeModel
 from mafia_model import MafiaGame
+import csv
 
 class ScrollablePlotWindow(QScrollArea):
     def __init__(self, round, parent=None):
@@ -129,6 +130,13 @@ class MainWindow(QMainWindow):
 
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.playMafia)
+        
+    def writeToCsv(self, result):
+        with open('mafia.csv', 'a', newline='') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=';')
+            csvwriter.writerow([self.villagers, self.mafiosi, self.doctors, self.informants, 
+                                self.mafia_strategy, self.informant_strategy, self.doctors_strategy,
+                                self.num_protectedPlayers, result])
 
     def start_game(self):
         self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors,
@@ -159,7 +167,7 @@ class MainWindow(QMainWindow):
 
             # Optionally save the plot
             #figure.savefig(os.getcwd() + f"/graphs/round_{self.round}.png", dpi=300)
-            figure.savefig(f"{self.round}.png", dpi=300)
+            #figure.savefig(f"{self.round}.png", dpi=300)
             
 
         except Exception as e:
@@ -201,7 +209,7 @@ class MainWindow(QMainWindow):
         if win:
             QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
-
+            self.writeToCsv(win)
             return
 
         if self.round > 1:
@@ -240,12 +248,16 @@ class MainWindow(QMainWindow):
         # The mafiosi might win the game by killing a villager at night
         win = self.game.checkWin()
         if win:
-            QMessageBox.information(self, "Game Over", f"{win} win!")
+            #QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
+            self.writeToCsv(win)
+            self.start_game()
             return
         elif len(self.game.alivePlayers) <= 2:
-            QMessageBox.information(self, "Game Over", "Tie!")
+            #QMessageBox.information(self, "Game Over", "Tie!")
             self.timer.stop()
+            self.writeToCsv('Tie')
+            self.start_game()
             return
         
         '''
@@ -300,9 +312,10 @@ class MainWindow(QMainWindow):
 
         win = self.game.checkWin()
         if win:
-            QMessageBox.information(self, "Game Over", f"{win} win!")
+            #QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
-
+            self.writeToCsv(win)
+            self.start_game()
             return
 
         if self.round == 1:

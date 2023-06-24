@@ -176,10 +176,12 @@ class MafiaGame:
                 mafiosoCount += 1
             else:
                 villagerCount += 1
+        
         if mafiosoCount == 0:
             print("Villagers win!")
             return "Villagers"
         elif villagerCount == 0:
             print("Mafiosi win!")
             return "Mafiosi"
+
         return False

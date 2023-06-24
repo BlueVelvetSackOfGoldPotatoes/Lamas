@@ -24,4 +24,4 @@ class KripkeModel:
         output_dir = "./model_graphs/"
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
-        plt.savefig("./model_graphs/kripke_" + str(iter) + ".png")
+        #plt.savefig("./model_graphs/kripke_" + str(iter) + ".png")
