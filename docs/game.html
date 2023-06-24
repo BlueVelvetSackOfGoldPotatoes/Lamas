@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<title>LAMAS: Mafia Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<head>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+
+<!-- Sidebar -->
+<nav>
+  <ul>
+    <li><a href="./index.html">Home</a></li>
+    <li><a href="./game.html">Rules of the Game</a></li>
+    <li><a href="./simplifications.html">Simplifications</a></li>
+    <li><a href="./strategies.html">Strategies</a></li>
+    <li><a href="./model.html">Model & Implementation</a></li>
+    <li><a href="./example.html">Illustration</a></li>
+    <li><a href="./results.html">Experiments & Results</a></li>
+    <li><a href="https://github.com/BlueVelvetSackOfGoldPotatoes/Lamas" target="_blank">GitHub</a></li>
+    <li><a href="./refs.html">References</a></li>
+  </ul>
+</nav>
+
+<div class="top-container">
+<div class="title" >
+
+
+</div>
+</div>
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:400px">
+
+  
+    <div class="w3-threequarter w3-container">
+
+
+
+<br>
+
+<h1 style="color: #DA0808;">How to play</h1>
+
+<br>
+<h3><b><font style="color: #781515">Get ready to explore the official rules of the Mafia Game!</b></font></h3>
+
+<p> Keep in mind that there are different versions of the game based on the participating teams. We will guide you through the rules as outlined in [1], and we will also cover some extra tweaks and simplifications made in the later section titled <a href="./simplifications.html"><font style="color: #781515">Simplifications</font></a>.</p>
+
+<p>The game involves a group of people, typically ranging from six to twenty players, who are divided into two main factions: the innocent Villagers and the cunning Mafiosi. The Villagers have no knowledge of the Mafiosi's identities, while the Mafiosi are aware of each other. Additionally, all players are informed in the beginning of the game about the total number of players in each group. Each faction has a distinct objective: the Villagers strive to uncover and eliminate all the Mafiosi, whereas the Mafiosi aim to reach numerical parity with the Villagers, ultimately gaining control of the village!</p>
+
+<p>The game unfolds through alternating <b>Night</b> and <b>Day</b> cycles. During the Night cycle, the Mafiosi secretly conspire to 'eliminate' one Villager, while the Villagers are 'asleep' and unaware of these happenings. The coming day, the Villagers learn about the unfortunate elimination that occurred overnight, and then engage in discussions, accusations, and debates to figure out who amongst them could be a Mafioso. This culminates in a voting process among all players, where the suspected Mafioso is 'lynched' if the majority of the group agrees.</p>
+
+<p> In order to win, Villagers try to identify all the Mafiosi players as the game progresses. They can deduce this knowledge by observing the voting patterns of different players, the contribution of each player in eliminating a true Mafioso, and finally with the help of special roles that exist in the game and possess more knowledge than the ordinary villagers. Conversely, the Mafiosi can employ diverse strategies during the night phase to eliminate an innocent player, aiming to target first those who suspect them or deceive the Villagers through their voting choices. A significant accomplishment for the Mafiosi is to identify and eliminate the special roles that could potentially provide the Villagers with more clues about the guilty players. </p>
+
+<p>Throughout the game, players must use their observation skills, strategic thinking, and persuasive abilities to convince others of their innocence or to cast suspicion on others. The game involves much bluffing, suspicion, interrogation, and strategic voting.</p>
+
+<h2>The Roles</h2>
+
+<ul>
+  <li><p><b>Villagers:</b> Forming the majority faction in the game, the Villagers lack any special abilities and focus on identifying and eliminating the Mafiosi.</p></li>
+  <li><p><b>Mafiosi:</b> The Mafiosi, constituting the minority faction in the game, strive to outnumber and eliminate the Villagers while keeping their true identities concealed.</p></li>
+  <li><p><b>Doctor:</b> Civilian roles who possess the ability to save a player they believe has been targeted by the Mafia during each nighttime phase. If the Doctors successfully choose the correct player to save, that player is revived and remains in the game. Their mission is to safeguard as many players as possible, which also allows them to gradually gather information about the innocent players who were nearly victimized by the Mafiosi.</p></li>
+  <li><p><b>Informant:</b> An innocent role who is granted full knowledge regarding the identity of a single Mafia member. Right from the start of the game, the Informant is informed about the true identity of the Mafioso, while the Mafia remains unaware of the Witness's identity. The Informant's mission is to expose the known Mafioso's identity to the other players and make efforts to identify the remaining members of the Mafia.</p></li>
+  
+</ul>
+
+<p>You can find further information about the various roles and their corresponding strategies in the pages titled <a href="./simplifications.html"><font style="color: #781515">Simplifications</font></a> and <a href="./strategies.html"><font style="color: #781515">Strategies</font></a>. These sections will provide in-depth details to enhance your understanding of the roles and offer insights into effective gameplay techniques.</p>
+
+<br>
+<br>
+
+</div>
+</div>
+
+<div class="w3-row w3-container">
+  <footer id="footer">
+    <div class="w3-container w3-theme-l2 w3-padding-32">
+      <h4></h4>
+    </div>
+
+    <div class="w3-container w3-theme-l1">
+      <p></p>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
+
