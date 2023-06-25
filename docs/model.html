@@ -56,15 +56,22 @@
 <p></p>
 
 <h2 id="game-erepresentation">Formal game and player representation </h2>
-<p></p>
-
-<h2 id="kripke-model">The Kripke Model</h2>
-<p></p>
-
+<p>The game of mafia consists of m players \(p \in P\). These players have exactly one role. The knowledge of these players is represented in a Kripke model \(M = \langle S, \pi, R_1, ..., R_m\rangle\).</p>
+<p>The Kripke model contains a state \(s \in S\) for every possible combination of roles. A player can access a state (formalization needed) when it considers the states of all players in that state to be possible. Since players know their own roles, they therefore cannot access any state where they do not have those roles. It is also common knowledge which players are alive or dead. This is a part of the Kripke model in a formal description of the game.</p>
+{Formal explanation of public announcements}
+<p>During the game, certain public announcements are made. These can be the killing of a player, a vote by a player during the day phase, or an announcement of the role and knowledge of an informant or doctor.</p>
+<h2 id="kripke-model">Our implementation of the Kripke Model</h2>
+<p>Our implementation of the Kripke model contains states that assign truth values to variables such as "player 1 is a doctor" or "player 3 is in the mafia". To represent these states compactly, each state is given a name based on the variables which are true in that state. For example: in a state where player 1 is a villager, player 2 is a mafioso and player 3 is a doctor, the name of the state would be "VMD".</p>
+<p>We chose not to include life or death in the states of our implementation of the Kripke model. Since whether a player is alive or dead is always common knowledge, since any death is publically announced, the question of "is player x alive?" can always be answered by looking at the actual state of that player. Adding this to the states would increase their amount by a factor of \(2^m\) and would therefore drastically reduce the amount of players our model could handle.</p>
 
 <h2 id="rules-information">Rules for gaining knowledge</h2>
-<p></p>
-
+<p>Players can gain knowledge by eliminating their access to certain states as a result of one of the public announcements mentioned above, or role specific knowledge. All players generate a list of roles that each player might have, based on the players' roles in the states the player can access. If they can only access states where a player has a certain role, they know the role of that player.</p>
+<h3 id="announcement-knowledge">Knowledge throuh a public announcement</h3>
+<p>The first type of public announcement is the death of a player. When this happens, their death is announced to all players, along with the role of the player who died. The players who are still alive can now eliminate any accessibility relations to worlds where the deceased player does not have that role.</p>
+<h3 id="role-knowledge">Role specific knowledge</h3>
+<p>Informants get to know the role of one mafia member from the start of the game, which is done in the same way.</p>
+<p>From the start of the game, members of the mafia are aware of who other members are, and doctors are aware of who the other doctors are. They eliminate any accessibility relations from states where a player is in their group, to a state where that player is not in their group.</p>
+<p>During the game, doctors can learn that they managed to protect their target from elimination by the mafia. From this, they conclude that the person they saved cannot be in the mafia, so they eliminate an accessibility relations to states where that player is a mafioso.</p>
 
 <h2 id="update-model">Updating the Kripke model</h2>
 <p></p>
