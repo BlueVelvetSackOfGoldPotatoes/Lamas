@@ -32,14 +32,15 @@
     
 .middle-container {
     padding: 50px;
-    background-image:url('imgs/textured_dark.jpg');
+    background-image: url('imgs/textured_dark.jpg');
 
-    background-size: 150%;
+    background-size: 160%;
     position: relative;
     object-fit: fill;
     width: auto;
-    height: 940px;
-    opacity: 0.85;
+    height: 1140px;
+    opacity: 0.8;
+
     }
    
     
@@ -302,15 +303,18 @@ position: relative;
   
     <div class="w3-threequarter w3-container">
 
-<br>
-<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. Here's a brief introduction before we delve into the logic behind it.</p>
+<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. The game's flow is guided by a Narrator, who keeps time rolling and serves as a moderator, impartially overseeing the game. Here's a brief introduction before we delve into the logic behind it.</p>
 
-<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. Here's a brief introduction before we delve into the logic behind it.</p>
-<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. Here's a brief introduction before we delve into the logic behind it.</p>
-<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. Here's a brief introduction before we delve into the logic behind it.</p>
-<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. Here's a brief introduction before we delve into the logic behind it.</p>
+<p>Within Werewolf, two primary teams emerge: the innocent Villagers and the cunning Mafiosi. The thrilling objective for players on both teams is to reveal the identities of their opponents and strategically eliminate them from the game. Throughout the gameplay, players actively participate in voting processes to eliminate suspected individuals and engage in dynamic conversations to exchange knowledge and deduce valuable information about both their allies and adversaries.</p>
 
-  
+<p>Our goal is to model the game of Mafia, analyze its mechanics, and determine the optimal strategies for winning. In the following section titled <a href="./model.html"><font style="color: #E52222">Model & Implementation</font></a>, you will find the specific aspects we implement and further analyze.</p>
+
+
+<p>For our project, we model a simplified version of the Mafia game. If you're new to this captivating game, we invite you to visit the <a href="./game.html"><font style="color: #E52222">Rules of the Game</font></a> page to familiarize yourself with the basic rules and factions. We firmly believe that the Mafia game is well-suited for in-depth analysis using epistemic logic. Specifically, we will formally represent the players, roles, and rules of the game. During the gameplay, significant moments arise when the moderator makes public announcements, revealing the identity of each eliminated player. These announcements ignite intense debates among the surviving players in their quest to uncover the identities of the true Mafia members. </p>
+
+ <p> Other than merely modeling Mafia, we intend to simulate the Mafia’s chance of victory with respect to the total number of players. Previous research studies, referenced in [2], have demonstrated the notable influence of special roles with unique abilities on the game’s dynamics. Furthermore, additional studies have indicated that the parity of the initial number of players also significantly affects the game’s outcome. In this project, we will conduct various experiments and attempt to simulate and analyze the influence of these variations and their corresponding results.</p> 
+ 
+ <p>  Python programming language is used for the implementation of our model.</p>
 </div>
 </div>
 </div>
@@ -338,9 +342,9 @@ position: relative;
 
 
 <div class ="img">
-<img class="item" src="imgs/test1.png">
+<img class="item" src="imgs/member1.png">
 <img class="item" src="imgs/anonymous.png">
-<img class="item" src="imgs/anonymous.png">
+<img class="item" src="imgs/member2.png">
 
 </div>
 
@@ -359,20 +363,17 @@ position: relative;
 </div>
 
   
- 
-  
-    
-
-
-
   <footer id="footer">
 
 
-    <div class="w3-container w3-theme-l1 w3-padding-64">
-      <p></p>
-    </div>
-  </footer>
+    <div class="w3-container w3-theme-l1 w3-padding-20">
+    <br>
 
+          <h4>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp This page was generated by  <br> 
+          &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  This page was generated by <mark class="red">GitHub Pages. </mark> </h4>
+    </div>
+   
+  </footer>
 
 </body>
 </html>

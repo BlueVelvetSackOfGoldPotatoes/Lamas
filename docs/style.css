@@ -66,10 +66,10 @@ h1 span {
  }
  
  h2 span {
-   font-size: 40px;
+   font-size: 35px;
    background-color: #000000;
    padding-bottom: 0.6rem;
-   padding-left: 1.1rem;
+   padding-left: 0.5rem;
    color: #FFFFFF;
    text-align: left;
    font-family: "Times New Roman"
@@ -139,6 +139,12 @@ body {
 
 
 
+}
+
+
+mark.red {
+    color:#E52222;
+    background: none;
 }
 
 
