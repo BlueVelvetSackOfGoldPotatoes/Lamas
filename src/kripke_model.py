@@ -10,12 +10,14 @@ class KripkeModel:
         self.G = nx.DiGraph()
 
     def build_model(self):
+        return
         for player in self.game.players:
             for belief in player.playerBeliefs:
                 for role in belief[1]:
                     self.G.add_edge(player.name, f"{belief[0].name}_{role}")
 
     def draw_model(self, iter):
+        return
         pos = nx.spring_layout(self.G)
         plt.figure(figsize=(8, 6))
         nx.draw_networkx(self.G, pos, arrows=True, with_labels=True, node_size=1000, alpha=0.3, font_weight='bold')

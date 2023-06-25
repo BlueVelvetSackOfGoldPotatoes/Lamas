@@ -63,7 +63,7 @@ class ScrollablePlotWindow(QScrollArea):
 class MainWindow(QMainWindow):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1,
                  mafia_strategy='enemy', informant_strategy='random',
-                 doctors_strategy='deterministic', num_protectedPlayers=1):
+                 doctors_strategy='deterministic', num_protectedPlayers=1, informant_enabled=False):
         super().__init__()
 
         self.plots = []
@@ -81,6 +81,8 @@ class MainWindow(QMainWindow):
         self.votes = None
         self.totalPlayers = 0
         self.round = 0
+        self.run = 0
+        self.informant_enabled = informant_enabled
 
         self.setGeometry(500, 500, 500, 300)
         self.setWindowTitle("Mafia Game")
@@ -136,14 +138,38 @@ class MainWindow(QMainWindow):
             csvwriter = csv.writer(csvfile, delimiter=';')
             csvwriter.writerow([self.villagers, self.mafiosi, self.doctors, self.informants, 
                                 self.mafia_strategy, self.informant_strategy, self.doctors_strategy,
-                                self.num_protectedPlayers, result])
+                                self.num_protectedPlayers, self.informant_enabled, result])
 
     def start_game(self):
-        self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors,
-                              informants=self.informants)
-        self.totalPlayers = len(self.game.players)
-        self.model = KripkeModel(self.game)
-        self.playMafia()
+        #self.run += 1
+        '''
+        if (self.run > 100):
+            self.run = 0
+            return
+        '''
+        mafia_strategy = ['enemy', 'allied', 'random']
+        informant_strategy = ['deterministic', 'random']
+        doctors_strategy = ['deterministic', 'random']
+        informant_enabled = [False, True]
+        for mstrat in mafia_strategy:
+            for istrat in informant_strategy:
+                for dstrat in doctors_strategy:
+                    for infen in informant_enabled:
+                        if not infen and istrat != 'deterministic':
+                            continue
+                        runs = 0
+                        self.mafia_strategy = mstrat
+                        self.informant_strategy = istrat
+                        self.doctors_strategy = dstrat
+                        self.informant_enabled = infen
+                        while (runs < 50):
+                            self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors,
+                                                  informants=self.informants)
+                            self.totalPlayers = len(self.game.players)
+                            self.model = KripkeModel(self.game)
+                            self.playMafia()
+                            runs += 1
+        print("Done!")
 
     def plot(self):
         try:
@@ -251,20 +277,20 @@ class MainWindow(QMainWindow):
             #QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
             self.writeToCsv(win)
-            self.start_game()
+            #self.start_game()
             return
         elif len(self.game.alivePlayers) <= 2:
             #QMessageBox.information(self, "Game Over", "Tie!")
             self.timer.stop()
             self.writeToCsv('Tie')
-            self.start_game()
+            #self.start_game()
             return
         
-        '''
+        
         # Check whether the Informant will reveal the identity of the one known mafia member
-        if not self.game.revealedMafioso:
+        if self.informant_enabled and not self.game.revealedMafioso:
             self.game.apply_informant_strategy(informant_strategy=self.informant_strategy)
-        '''
+        
 
         # Perform a round of day phase
         voteCount = {}
@@ -306,7 +332,7 @@ class MainWindow(QMainWindow):
                     self.game_log.append(f"{player.name} correctly suspected {maxPlayer.name}!")
                     player.updateKnowledge()
 
-        self.model.build_model()
+        #self.model.build_model()
 
         self.game_log.append("---------------------------------------------------------------------------------------------------\n")
 
@@ -315,16 +341,17 @@ class MainWindow(QMainWindow):
             #QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
             self.writeToCsv(win)
-            self.start_game()
+            #self.start_game()
             return
 
-        if self.round == 1:
-            self.plot()
+        #if self.round == 1:
+            #self.plot()
 
-        self.start_timer()
+        #self.start_timer()
+        self.playMafia()
 
     def start_timer(self):
-        self.timer.start(500)
+        self.timer.start(2)
 
 if __name__ == '__main__':
     """ mafia_strategy = {enemy, allied, random}
@@ -332,7 +359,7 @@ if __name__ == '__main__':
         doctors_strategy = {deterministic, random} """
 
     app = QApplication(sys.argv)
-    window = MainWindow(villagers=3, mafiosi=2, informants=1, doctors=1, mafia_strategy='enemy')
+    window = MainWindow(villagers=4, mafiosi=2, informants=1, doctors=1, mafia_strategy='enemy', informant_enabled=True)
     window.setWindowFlags(Qt.Window | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint | Qt.WindowMaximizeButtonHint)
     window.showMaximized()
     sys.exit(app.exec_())
