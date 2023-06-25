@@ -58,11 +58,11 @@
 
 
   <ul>
-      <li><p><font style="color: #E52222"><a href="#night_phase">Voting against innocent Villagers (Night phase)</a></font></p></li>
-      <li><p><font style="color: #E52222"><a href="#day_phase">Voting against Mafia members (Day phase)</a></font></p></li>
-      <li><p><font style="color: #E52222"><a href="#doctors_phase">Doctors protecting an innocent</a></font></p></li>
-      <li><p><font style="color: #E52222"><a href="#doctors_ann">Doctors revealing protected Villagers</a></font></p></li>
-      <li><p><font style="color: #E52222"><a href="#inf_ann">Informants revealing Mafia member</a></font></p></li>
+      <li><p><font style="color: #781515"><a href="#night_phase">Voting against innocent Villagers (Night phase)</a></font></p></li>
+      <li><p><font style="color: #781515"><a href="#day_phase">Voting against Mafia members (Day phase)</a></font></p></li>
+      <li><p><font style="color: #781515"><a href="#doctors_phase">Doctors protecting an innocent</a></font></p></li>
+      <li><p><font style="color: #781515"><a href="#doctors_ann">Doctors revealing protected Villagers</a></font></p></li>
+      <li><p><font style="color: #781515"><a href="#inf_ann">Informants revealing Mafia member</a></font></p></li>
     </ul>
 
 
@@ -73,14 +73,14 @@
   <ul>
       <li><p>RANDOM: Randomly select one of the alive players that is not part of the Mafia to kill.</p></li>
       <li><p>ENEMY: Kill one of the alive players that is not part of the Mafia and on the previous day phase voted against one of the Mafiosi. By doing so, the Mafia aims to first eliminate players who harbor suspicion and pose a threat to their members.</p></li>
-      <li><p>ALLIED: Kill one of the alive players that is not part of the Mafia and on the previous day phase supported Mafia by voting against other innocent players. This tactic may allow Mafia to potentially mislead the voting decisions of the Villagers during the day phase by removing players who, despite not suspecting the Mafia, are genuinely innocent. </p></li>
+      <li><p>ALLIED: Kill one of the alive players that is not part of the Mafia and on the previous day phase unintentionally supported Mafia by voting against other innocent players. This tactic may allow Mafia to potentially mislead the voting decisions of the Villagers during the day phase by removing players who, despite not suspecting the Mafia, are genuinely innocent. </p></li>
    </ul>
 
-<p>The three aforementioned strategies are simple, straightforward, and not dynamic. Whichever strategy the Mafia selects at the beginning of the game will persist until the very end, without any alterations or adjustments. However, as it is also mentioned in the page <a href="./game.html"><font style="color: #E52222">Rules of the Game</font></a>, it is of paramount importance for increasing  the Mafiosi's chances of winning to eliminate characters with special abilities. Therefore, in addition to the predefined fixed strategies, we always prioritize the elimination of these specific roles, namely the Doctors and the Informant. If, at any point, a player with a special role reveals their identity to all other players, they instantly become the primary target for elimination in the following night phase. The same holds when the identity of an ordinary Villager is revealed but with a lower priority compared to the Doctors who possess the ability to save players and counteract the actions of the Mafiosi. This is because a player who is known to be an innocent, even a simple one, will never be targeted by the rest of the Villagers, and thus can not assist in the survival of the Mafia members. </p>
+<p>The three aforementioned strategies are simple, straightforward, and not dynamic. Whichever strategy the Mafia selects at the beginning of the game will persist until the very end, without any alterations or adjustments. However, as it is also mentioned in the page <a href="./game.html"><font style="color: #E52222">Rules of the Game</font></a>, it is of paramount importance for increasing  the Mafiosi's chances of winning to eliminate characters with special abilities. Therefore, in addition to the predefined fixed strategies, we always prioritize the elimination of these special roles, namely the Doctors and the Informant. If, at any point, a player with a special role reveals their identity to all other players, they instantly become the primary target for elimination in the following night phase. The same holds when the identity of an ordinary Villager is revealed but with a lower priority compared to the Doctors who also possess the ability to save players and counteract the actions of the Mafiosi. This is because a player who is known to be an innocent, even a simple one, will never be targeted by the rest of the Villagers, and thus can not assist in the survival of the Mafia members. </p>
 
 <h2><a id="day_phase">Voting against Mafia members (Day phase)</a></h2>
 
-<p></p>
+<p>Here, we present how the open voting process takes place during the day phase with the aim of eliminating Mafia members. In our model, each player randomly selects another player whom they suspect to be a Mafioso and casts their vote against them. Subsequently, we gather the votes from all players simultaneously and remove the player with the majority of downvotes. The true identity of the eliminated player is then revealed. An extension to this would be to also consider the players killed during the previous night phases and their open votes before those facts when determining the most likely suspect to eliminate in the current day phase. That is because there is a high possibility that the votes of those players resulted in their own elimination and thus, would betray the true Mafia members. </p>
 
 <h2><a id="doctors_phase">Doctors protecting an innocent</a></h2>
 
