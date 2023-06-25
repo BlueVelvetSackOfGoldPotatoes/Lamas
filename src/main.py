@@ -1,7 +1,7 @@
 import sys
 import os
 import traceback
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTextEdit, QLabel, QMessageBox, QVBoxLayout, QWidget, QScrollArea
+from PyQt5.QtWidgets import QApplication, QSizePolicy, QMainWindow, QPushButton, QTextEdit, QLabel, QMessageBox, QVBoxLayout, QWidget, QScrollArea
 from PyQt5.QtCore import QTimer, Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -111,6 +111,7 @@ class MainWindow(QMainWindow):
 
         # Create a widget to hold the plots
         plots_widget = QWidget()
+        plot_widget.setMinimumSize(500,500)
         plots_layout = QVBoxLayout(plots_widget)
         plot_scroll_area.setWidget(plots_widget)
 
@@ -139,28 +140,29 @@ class MainWindow(QMainWindow):
 
     def plot(self):
         try:
-            # 1. Instantiate new figure and canvas
+            # Instantiate new figure and canvas
             figure = Figure(figsize=(5, 5), dpi=300)
             canvas = FigureCanvas(figure)
             toolbar = NavigationToolbar(canvas, self)
 
-            # 2. Update the plot using new figure
+            # Update the plot using new figure
             self.update_plot(figure, self.model.G.copy(), self.game)
 
-            # 3. Add the canvas and navigation toolbar to the plot widget
+            # Add the canvas and navigation toolbar to the plot widget
             plot_widget = QWidget()
+            plot_widget.setMinimumSize(500,500)  # Set the minimum size
+            plot_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Set the size policy
+
             plot_layout = QVBoxLayout(plot_widget)
             plot_layout.addWidget(QLabel(f"=== Round {self.round} ==="))
             plot_layout.addWidget(toolbar)
             plot_layout.addWidget(canvas)
 
-            # 4. Add the plot widget to the plots layout
+            # Add the plot widget to the plots layout
             self.plots_layout.addWidget(plot_widget)
-
-            # Optionally save the plot
+            
             #figure.savefig(os.getcwd() + f"/graphs/round_{self.round}.png", dpi=300)
             figure.savefig(f"{self.round}.png", dpi=300)
-            
 
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
@@ -189,6 +191,9 @@ class MainWindow(QMainWindow):
         ax.autoscale(enable=True)
 
     def playMafia(self):
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+
         self.round += 1
         self.game_log.append(f"\n\n=== Round {self.round} ===\n\n")
 
@@ -206,6 +211,7 @@ class MainWindow(QMainWindow):
 
         if self.round > 1:
             self.plot()
+            self.plots_layout.addWidget(scroll)
 
         # Perform a round of night phase
         if len(self.game.alivePlayers) == self.totalPlayers:
@@ -307,6 +313,7 @@ class MainWindow(QMainWindow):
 
         if self.round == 1:
             self.plot()
+            self.plots_layout.addWidget(scroll)
 
         self.start_timer()
 
