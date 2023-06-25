@@ -13,52 +13,6 @@ import networkx as nx
 from kripke_model import KripkeModel
 from mafia_model import MafiaGame
 
-class ScrollablePlotWindow(QScrollArea):
-    def __init__(self, round, parent=None):
-        super().__init__(parent)
-        self.setWidgetResizable(True)
-
-        content_widget = QWidget()
-        self.setWidget(content_widget)
-
-        self.figure = Figure(figsize=(5, 5), dpi=300)
-        self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
-        self.round = round
-
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel(f"=== Round {self.round} ==="))
-        layout.addWidget(self.toolbar)
-        layout.addWidget(self.canvas)
-
-        content_widget.setLayout(layout)
-
-    def save_plot(self, filename):
-        self.figure.savefig(filename, dpi=300)
-
-    def update_plot(self, graph, game):
-        player_roles = {player.name: player.role.name for player in game.players}
-
-        pos = nx.spring_layout(graph, scale=2)
-
-        # Clear the figure before adding a new subplot
-        self.figure.clear()
-
-        ax = self.figure.add_subplot(111)
-        for role, color in [('MAFIOSO', 'red'), ('DOCTOR', 'blue'), ('INFORMANT', 'yellow'), ('VILLAGER', 'green')]:
-            nodes_of_role = [node for node in graph.nodes if player_roles.get(node, None) == role]
-            nx.draw_networkx_nodes(graph, pos, nodelist=nodes_of_role, node_color=color, ax=ax, label=role)
-
-        nx.draw_networkx_edges(graph, pos, ax=ax)
-        nx.draw_networkx_labels(graph, pos, ax=ax)
-
-        ax.legend()  # Add a legend
-
-        ax.set_aspect("auto")
-        ax.autoscale(enable=True)
-
-        self.canvas.draw()
-
 class MainWindow(QMainWindow):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1,
                  mafia_strategy='enemy', informant_strategy='random',
@@ -111,7 +65,6 @@ class MainWindow(QMainWindow):
 
         # Create a widget to hold the plots
         plots_widget = QWidget()
-        plot_widget.setMinimumSize(500,500)
         plots_layout = QVBoxLayout(plots_widget)
         plot_scroll_area.setWidget(plots_widget)
 
@@ -162,7 +115,7 @@ class MainWindow(QMainWindow):
             self.plots_layout.addWidget(plot_widget)
             
             #figure.savefig(os.getcwd() + f"/graphs/round_{self.round}.png", dpi=300)
-            figure.savefig(f"{self.round}.png", dpi=300)
+            figure.savefig(f"./model_graphs/{self.round}.png", dpi=300)
 
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
