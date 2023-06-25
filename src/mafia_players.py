@@ -3,13 +3,11 @@ import random
 from enum import Enum
 from mlsolver.formula import *
 
-
 class Roles(Enum):
     VILLAGER = 0
     MAFIOSO = 1
     DOCTOR = 2
     INFORMANT = 3
-
 
 class Player:
     def __init__(self, name="Player"):
@@ -62,7 +60,7 @@ class Player:
                     newRelations.add(relation)
             self.model.ks.relations[str(player.player_id)] = newRelations
             player.readKripkeModel()
-            
+
     def updateKnowledge(self):
         for player in self.alivePlayers:
             player.updateRelations(lambda relation: relation[1][self.player_id] != 'M')
@@ -103,7 +101,6 @@ class Player:
                     if actualRole.name not in self.playerBeliefs[num][1]:
                         self.playerBeliefs[num][1].append(actualRole.name)
 
-
 class Villager(Player):
     def __init__(self):
         super().__init__()
@@ -112,7 +109,6 @@ class Villager(Player):
 
     def suspectMafioso(self, candidate):
         self.accusations[candidate.name] += 1
-
 
 class Informant(Villager):
     def __init__(self):
@@ -131,7 +127,6 @@ class Informant(Villager):
         super().initializeBeliefs()
         self.updateRelations(lambda relation: relation[1][target.player_id] == 'M')
 
-
 class Mafioso(Player):
     def __init__(self):
         super().__init__()
@@ -148,7 +143,6 @@ class Mafioso(Player):
                       (belief[0] in self.alivePlayers and "MAFIOSO" not in belief[1])]
         # Vote for a random villager who is not in the mafia
         return random.choice(candidates)
-
 
 class Doctor(Villager):
     def __init__(self):

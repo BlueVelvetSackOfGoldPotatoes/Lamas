@@ -1,11 +1,10 @@
 import sys
-import os
 import traceback
 from PyQt5.QtWidgets import QApplication, QSizePolicy, QMainWindow, QPushButton, QTextEdit, QLabel, QMessageBox, QVBoxLayout, QWidget, QScrollArea
 from PyQt5.QtCore import QTimer, Qt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
+import matplotlib.patches as mpatches
 from matplotlib.figure import Figure
 
 import networkx as nx
@@ -92,6 +91,8 @@ class MainWindow(QMainWindow):
         self.playMafia()
 
     def plot(self):
+        self.model.build_model()
+
         try:
             # Instantiate new figure and canvas
             figure = Figure(figsize=(5, 5), dpi=300)
@@ -103,7 +104,7 @@ class MainWindow(QMainWindow):
 
             # Add the canvas and navigation toolbar to the plot widget
             plot_widget = QWidget()
-            plot_widget.setMinimumSize(500,500)  # Set the minimum size
+            plot_widget.setMinimumSize(1000,1000)  # Set the minimum size - this increases the actual plots size
             plot_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)  # Set the size policy
 
             plot_layout = QVBoxLayout(plot_widget)
@@ -123,25 +124,36 @@ class MainWindow(QMainWindow):
             return
 
     def update_plot(self, figure, graph, game):
-        player_roles = {player.name: player.role.name for player in game.players}
-
-        pos = nx.spring_layout(graph, scale=2)
-        
-        # Clear the figure before adding a new subplot
         figure.clear()
-
+        player_roles = {player.name: player.role.name for player in game.alivePlayers}
+        # pos = nx.random_layout(graph)
+        pos = nx.shell_layout(graph)
+        
         ax = figure.add_subplot(111)
-        for role, color in [('MAFIOSO', 'red'), ('DOCTOR', 'blue'), ('INFORMANT', 'yellow'), ('VILLAGER', 'green')]:
-            nodes_of_role = [node for node in graph.nodes if player_roles.get(node, None) == role]
-            nx.draw_networkx_nodes(graph, pos, nodelist=nodes_of_role, node_color=color, ax=ax, label=role)
+        legend_handles = []
 
-        nx.draw_networkx_edges(graph, pos, ax=ax)
-        nx.draw_networkx_labels(graph, pos, ax=ax)
+        role_colors = {'MAFIOSO': 'crimson', 'DOCTOR': 'cyan', 'INFORMANT': 'goldenrod', 'VILLAGER': 'green'}
 
-        ax.legend()  # Add a legend
+        for role, color in role_colors.items():
+            nodes_of_role = [node for node, role_node in player_roles.items() if role_node == role]
+            nx.draw_networkx_nodes(graph, pos, nodelist=nodes_of_role, node_color=color, ax=ax)
+            legend_handles.append(mpatches.Patch(color=color, label=role))
+
+        for edge in graph.edges:
+            edge_color = role_colors.get(player_roles.get(edge[0]), 'black')
+            nx.draw_networkx_edges(graph, pos, edgelist=[edge], edge_color=edge_color, ax=ax)
+
+        nx.draw_networkx_edges(graph, pos, ax=ax, width=0.3, alpha=0.1)
+        nx.draw_networkx_labels(graph, pos, ax=ax, font_size=3)
+
+        # add the legend using the list of proxy artists
+        ax.legend(handles=legend_handles, fontsize=3, loc='upper left',bbox_to_anchor=(1, 0.5))
 
         ax.set_aspect("auto")
         ax.autoscale(enable=True)
+    
+    def start_timer(self):
+        self.timer.start(500)
 
     def playMafia(self):
         scroll = QScrollArea()
@@ -159,7 +171,9 @@ class MainWindow(QMainWindow):
         if win:
             QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
-
+            self.plot()
+            self.plots_layout.addWidget(scroll)
+            self.game_log.append(f"Game Over, {win} win!")
             return
 
         if self.round > 1:
@@ -201,10 +215,18 @@ class MainWindow(QMainWindow):
         if win:
             QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
+            self.game_log.append(f"Game Over, {win} win!")
+            self.plot()
+            self.plots_layout.addWidget(scroll)
             return
+        
         elif len(self.game.alivePlayers) <= 2:
             QMessageBox.information(self, "Game Over", "Tie!")
             self.timer.stop()
+            self.game_log.append(f"Game Over, Tie!")
+            self.plot()
+            self.plots_layout.addWidget(scroll)
+
             return
         
         '''
@@ -253,15 +275,15 @@ class MainWindow(QMainWindow):
                     self.game_log.append(f"{player.name} correctly suspected {maxPlayer.name}!")
                     player.updateKnowledge()
 
-        self.model.build_model()
-
         self.game_log.append("---------------------------------------------------------------------------------------------------\n")
 
         win = self.game.checkWin()
         if win:
             QMessageBox.information(self, "Game Over", f"{win} win!")
             self.timer.stop()
-
+            self.game_log.append(f"Game Over, {win} win!")
+            self.plot()
+            self.plots_layout.addWidget(scroll)
             return
 
         if self.round == 1:
@@ -269,10 +291,7 @@ class MainWindow(QMainWindow):
             self.plots_layout.addWidget(scroll)
 
         self.start_timer()
-
-    def start_timer(self):
-        self.timer.start(500)
-
+         
 if __name__ == '__main__':
     """ mafia_strategy = {enemy, allied, random}
         informant_strategy = {deterministic, random} 

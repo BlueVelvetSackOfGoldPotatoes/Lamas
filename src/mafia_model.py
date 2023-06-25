@@ -4,7 +4,6 @@ from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
 from mlsolver.model import Mafia
 import numpy as np
 
-
 class MafiaGame:
     def __init__(self, villagers=1, mafiosi=1, doctors=0, informants=0):
         self.kripke_model = KripkeModel(self)
@@ -34,7 +33,6 @@ class MafiaGame:
             player.alivePlayers = self.alivePlayers
             player.initializeBeliefs()
             player.accusations = {player.name: 0 for player in self.players if player.role.name == 'MAFIOSO'}
-        
 
     def addPlayers(self, count, Role):
         for itr in range(count):
@@ -88,6 +86,7 @@ class MafiaGame:
         candidates = [player for player in self.alivePlayers]
         protected = random.choice(candidates)
         return protected
+    
     def protectedID_is_known(self, protected):
         """ This function is called only if at least one Doctor is alive. """
         for player in self.alivePlayers:
@@ -106,6 +105,7 @@ class MafiaGame:
         for player in self.alivePlayers:
             if isinstance(player, Doctor):
                 player.changeDoctorsKnowledge(protected)
+
     def apply_doctors_strategy(self, doctors_strategy='deterministic', num_protectedPLayers=1):
         """ This function is called only if at least one Doctor is alive. """
         if doctors_strategy == 'deterministic' and len(self.protectedPLayers) == num_protectedPLayers:
@@ -116,6 +116,7 @@ class MafiaGame:
             if np.random.rand() > 0.5:
                 # Make a public announcement
                 self.make_public_announcement()
+
     def make_public_announcement(self):
         print("A Doctor will make a public announcement about the saved players!\n")
         for player in self.protectedPLayers:
