@@ -57,11 +57,16 @@
 
 <h2>Experimental setup</h2>
 
-<p></p>
+<p>We ran the model 50 times for each combination of the parameters, for a total of 900 runs. These parameters were the mafia strategy (enemy, allied, random), informant strategy (deterministic, random, none), and doctor strategy (deterministic, random). "none" is not a defined strategy for the informant in our code, but for these tests we disabled the informant's ability to make public announcements.</p>
 
 <h2>Results</h2>
 
-<p></p>
+<p>The doctors' strategy resulted in virtually no difference, with a 62% win rate for the villagers using the random strategy and a 60% win rate using the deterministic strategy.</p>
+<img src="imgs/doctor_strategy.png">
+<p>The mafia's strategy resulted in a small difference, with a 39% win rate for the mafia using the enemy strategy, a 36% win rate using the allied strategy and a 33% win rate using the random strategy.</p>
+<img src="imgs/mafia_strategy.png">
+<p>The informants' strategy resulted in a large difference, with a 27% win rate for the villagers when they are not allowed to make public announcements, a 70% win rate using the random strategy and an 85% win rate using the deterministic strategy.</p>
+<img src="imgs/informant_strategy.png">
 
 
 <h1 style="color: #DA0808;">Discussion & Conclusion</h1>
