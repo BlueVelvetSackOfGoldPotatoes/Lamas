@@ -65,16 +65,18 @@
 <p>We chose not to include life or death in the states of our implementation of the Kripke model. Since whether a player is alive or dead is always common knowledge, since any death is publically announced, the question of "is player x alive?" can always be answered by looking at the actual state of that player. Adding this to the states would increase their amount by a factor of \(2^m\) and would therefore drastically reduce the amount of players our model could handle.</p>
 
 <h2 id="rules-information">Rules for gaining knowledge</h2>
-<p>Players can gain knowledge by eliminating their access to certain states as a result of one of the public announcements mentioned above, or role specific knowledge. All players generate a list of roles that each player might have, based on the players' roles in the states the player can access. If they can only access states where a player has a certain role, they know the role of that player.</p>
-<h3 id="announcement-knowledge">Knowledge throuh a public announcement</h3>
-<p>The first type of public announcement is the death of a player. When this happens, their death is announced to all players, along with the role of the player who died. The players who are still alive can now eliminate any accessibility relations to worlds where the deceased player does not have that role.</p>
+<p>Players can gain knowledge by eliminating their access to certain states as a result of one of the public announcements mentioned above, role specific knowledge, or previous voting behavior. All players generate a list of roles that each player might have, based on the players' roles in the states the player can access. If they can only access states where a player has a certain role, they know the role of that player.</p>
+<h3 id="announcement-knowledge">Knowledge through a public announcement</h3>
+<p>The first type of public announcement is the death of a player. When this happens, their death is announced to all players, along with the role of the player who died. The players who are still alive eliminate any accessibility relations to states where the deceased player does not have that role.</p>
+<p>The second type of public announcement is a vote during the day phase. While these announcements have no direct impact on the Kripke model, our implementation does keep track of which players have voted to eliminate which mafioso.</p>
+<p>The third type of public announcement is an announcement by an informant or doctor of their special knowledge. In doing so, they reveal their own identity. The informant announces the identity of their targeted mafioso, while the doctor announces the patients they have saved, which cannot be members of the mafia. All players then eliminate accessibility relations to worlds where the informant's target is not a mafioso, or the doctor's patients are mafiosi.
 <h3 id="role-knowledge">Role specific knowledge</h3>
 <p>Informants get to know the role of one mafia member from the start of the game, which is done in the same way.</p>
 <p>From the start of the game, members of the mafia are aware of who other members are, and doctors are aware of who the other doctors are. They eliminate any accessibility relations from states where a player is in their group, to a state where that player is not in their group.</p>
 <p>During the game, doctors can learn that they managed to protect their target from elimination by the mafia. From this, they conclude that the person they saved cannot be in the mafia, so they eliminate an accessibility relations to states where that player is a mafioso.</p>
 
-<h2 id="update-model">Updating the Kripke model</h2>
-<p></p>
+<!--<h2 id="update-model">Updating the Kripke model</h2>
+<p></p>-->
 
 
 <h2 id="gui">The graphical user interface</h2>
