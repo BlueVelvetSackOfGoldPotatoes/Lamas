@@ -59,7 +59,6 @@
 <h2 id="game-erepresentation">Formal game and player representation </h2>
 <p>The game of mafia consists of m players \(p \in P\). These players have exactly one role. The knowledge of these players is represented in a Kripke model \(M = \langle S, \pi, R_1, ..., R_m\rangle\).</p>
 <p>The Kripke model contains a world \(s \in S\) for every possible combination of roles. A player can access a world (formalization needed) if and only if it considers the roles of all players in that world to be possible. Since players know their own roles, they therefore cannot access any world where they do not have those roles. It is also common knowledge which players are alive or dead. In a formal description of the game, part of the worlds of the Kripke model is a variable for each player, describing whether they are dead or alive.</p>
-{Formal explanation of public announcements}
 <p>During the game, certain public announcements are made. These can be the killing of a player, a vote by a player during the day phase, or an announcement of the role and knowledge of an informant or doctor.</p>
 <h2 id="kripke-model">Our implementation of the Kripke Model</h2>
 <p>Our implementation of the Kripke model contains worlds that assign truth values to variables such as "player 1 is a doctor" or "player 3 is in the mafia". To represent these worlds compactly, each world is given a name based on the variables which are true in that world. For example: in a world where player 1 is a villager, player 2 is a mafioso and player 3 is a doctor, the name of the world would be "VMD".</p>
@@ -82,10 +81,6 @@
 
 <!--<h2 id="update-model">Updating the Kripke model</h2>
 <p></p>-->
-
-
-<h2 id="gui">The graphical user interface</h2>
-<p></p>
 
 <br>
 
