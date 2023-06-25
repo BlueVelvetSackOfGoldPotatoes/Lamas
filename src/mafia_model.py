@@ -1,12 +1,12 @@
 import random
-from kripke_model import KripkeModel
+from belief_graph import BeliefGraph
 from mafia_players import Mafioso, Roles, Villager, Doctor, Informant
 from mlsolver.model import Mafia
 import numpy as np
 
 class MafiaGame:
     def __init__(self, villagers=1, mafiosi=1, doctors=0, informants=0):
-        self.kripke_model = KripkeModel(self)
+        self.belief_graph = BeliefGraph(self)
         self.model = Mafia({"mafiosi": mafiosi, "villagers": villagers, "informants": informants, "doctors": doctors})
         self.players = []
         
@@ -38,7 +38,7 @@ class MafiaGame:
         for itr in range(count):
             player = Role()
             player.name = f"{player.role.name.capitalize()} {itr}"
-            player.kripke_model = self.kripke_model
+            player.belief_graph = self.belief_graph
             self.players.append(player)
 
     def voteVillager(self,  mafia_strategy='random', votes=None):

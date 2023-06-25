@@ -9,13 +9,13 @@ from matplotlib.figure import Figure
 
 import networkx as nx
 
-from kripke_model import KripkeModel
+from belief_graph import BeliefGraph
 from mafia_model import MafiaGame
 
 class MainWindow(QMainWindow):
     def __init__(self, villagers=10, mafiosi=2, doctors=1, informants=1,
                  mafia_strategy='enemy', informant_strategy='random',
-                 doctors_strategy='deterministic', num_protectedPlayers=1):
+                 doctors_strategy='deterministic', num_protectedPlayers=1, informant_enabled=True):
         super().__init__()
 
         self.plots = []
@@ -29,10 +29,11 @@ class MainWindow(QMainWindow):
         self.doctors_strategy = doctors_strategy
         self.num_protectedPlayers = num_protectedPlayers
         self.game = None
-        self.model = None
+        self.belief_graph = None
         self.votes = None
         self.totalPlayers = 0
         self.round = 0
+        self.informant_enabled = informant_enabled
 
         self.setGeometry(500, 500, 500, 300)
         self.setWindowTitle("Mafia Game")
@@ -87,11 +88,11 @@ class MainWindow(QMainWindow):
         self.game = MafiaGame(villagers=self.villagers, mafiosi=self.mafiosi, doctors=self.doctors,
                               informants=self.informants)
         self.totalPlayers = len(self.game.players)
-        self.model = KripkeModel(self.game)
+        self.belief_graph = BeliefGraph(self.game)
         self.playMafia()
 
     def plot(self):
-        self.model.build_model()
+        self.belief_graph.build_model()
 
         try:
             # Instantiate new figure and canvas
@@ -100,7 +101,7 @@ class MainWindow(QMainWindow):
             toolbar = NavigationToolbar(canvas, self)
 
             # Update the plot using new figure
-            self.update_plot(figure, self.model.G.copy(), self.game)
+            self.update_plot(figure, self.belief_graph.G.copy(), self.game)
 
             # Add the canvas and navigation toolbar to the plot widget
             plot_widget = QWidget()
@@ -229,11 +230,9 @@ class MainWindow(QMainWindow):
 
             return
         
-        '''
         # Check whether the Informant will reveal the identity of the one known mafia member
-        if not self.game.revealedMafioso:
+        if self.informant_enabled and not self.game.revealedMafioso:
             self.game.apply_informant_strategy(informant_strategy=self.informant_strategy)
-        '''
 
         # Perform a round of day phase
         voteCount = {}
@@ -298,7 +297,7 @@ if __name__ == '__main__':
         doctors_strategy = {deterministic, random} """
 
     app = QApplication(sys.argv)
-    window = MainWindow(villagers=3, mafiosi=2, informants=1, doctors=1, mafia_strategy='enemy')
+    window = MainWindow(villagers=4, mafiosi=2, informants=1, doctors=1, mafia_strategy='enemy')
     window.setWindowFlags(Qt.Window | Qt.WindowMinimizeButtonHint | Qt.WindowCloseButtonHint | Qt.WindowMaximizeButtonHint)
     window.showMaximized()
     sys.exit(app.exec_())

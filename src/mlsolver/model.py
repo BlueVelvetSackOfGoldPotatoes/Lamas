@@ -1,9 +1,3 @@
-""" Three wise men puzzle
-
-Module contains data model for three wise men puzzle as Kripke strukture and agents announcements as modal logic
-formulas
-"""
-
 from mlsolver.kripke import KripkeStructure, World
 from mlsolver.formula import Atom, And, Not, Or, Box_a, Box_star
 import copy
@@ -22,37 +16,13 @@ class Mafia:
         print(f"The number of worlds in this Kripke model will be at most {world_count}.")
         
         worlds = self.generate_worlds(roles)
-        #for world in worlds:
-            #print(world)
         
         relations = self.generate_relations(worlds)
-        #print(relations)
-        #relations = {
-        #    '1': {('RWW', 'WWW'), ('RRW', 'WRW'), ('RWR', 'WWR'), ('WRR', 'RRR')},
-        #    '2': {('RWR', 'RRR'), ('RWW', 'RRW'), ('WRR', 'WWR'), ('WWW', 'WRW')},
-        #    '3': {('WWR', 'WWW'), ('RRR', 'RRW'), ('RWW', 'RWR'), ('WRW', 'WRR')}
-        #}
-
-        #relations.update(add_reflexive_edges(worlds, relations))
-        #relations.update(add_symmetric_edges(relations))
 
         self.ks = KripkeStructure(worlds, relations)
-
-        # Wise man ONE does not know whether he wears a red hat or not
-        #self.knowledge_base.append(And(Not(Box_a('1', Atom('1:R'))), Not(Box_a('1', Not(Atom('1:R'))))))
-
-        # This announcement implies that either second or third wise man wears a red hat.
-        #self.knowledge_base.append(Box_star(Or(Atom('2:R'), Atom('3:R'))))
-
-        # Wise man TWO does not know whether he wears a red hat or not
-        #self.knowledge_base.append(And(Not(Box_a('2', Atom('2:R'))), Not(Box_a('2', Not(Atom('2:R'))))))
-
-        # This announcement implies that third men has be the one, who wears a red hat
-        #self.knowledge_base.append(Box_a('3', Atom('3:R')))
         
     
     def generate_relations(self, worlds):
-        #print(type(worlds))
         relations = {}
         for itr in range(len(worlds[0].assignment.keys())):
             relations[str(itr)] = set(())
@@ -72,13 +42,8 @@ class Mafia:
             worldSize -= roles[role]
         tempWorlds = []
         # Combine the worlds from add_players with only 1 player into actual worlds.
-        #print(worldLists)
         modelWorlds = self.combine_worlds(worldLists)
         worlds = self.convert_worlds(modelWorlds)
-        #for model in worlds:
-            #print(type(model))
-            #print(model)
-        #print(type(worlds))
         print(f"Actually, there were {len(worlds)} worlds.")
         return worlds
         
@@ -146,8 +111,6 @@ class Mafia:
             # Add a world with the initial positions of the roles.
             world = [None for itr in range(worldSize)]
             for place in places:
-                #print(f"worldSize: {worldSize}. place: {place}.")
-                #print(f"places: {places}.")
                 world[place] = role
             worlds.append(world)
             # Get positions where the players with this role should be added next.
