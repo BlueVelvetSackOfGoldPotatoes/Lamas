@@ -53,7 +53,7 @@
 
 <h1 style="color: #DA0808;">Model & Implementation</h1>
 
-<p></p>
+<p>For our implementation, we used a python implementation of a kripke model found at https://github.com/erohkohl/mlsolver.</p>
 
 <h2 id="game-erepresentation">Formal game and player representation </h2>
 <p>The game of mafia consists of m players \(p \in P\). These players have exactly one role. The knowledge of these players is represented in a Kripke model \(M = \langle S, \pi, R_1, ..., R_m\rangle\).</p>
@@ -76,6 +76,7 @@
 <p>During the game, doctors can learn that they managed to protect their target from elimination by the mafia. From this, they conclude that the person they saved cannot be in the mafia, so they eliminate any accessibility relations to worlds where that player is a mafioso.</p>
 <h3 id="vote-knowledge">Knowledge from previous votes</h3>
 <p>Our implementation stores the players that voted on each mafioso. When a mafioso is revealed, this means that all players now know that people who voted against that mafioso are not mafiosi themselves. Therefore they remove any accessibility relations to worlds where those people are mafiosi.</p>
+
 
 
 <!--<h2 id="update-model">Updating the Kripke model</h2>
