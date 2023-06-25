@@ -1,3 +1,6 @@
+
+
+
 nav {
     box-sizing: border-box;
     background-color: #781515;
@@ -40,14 +43,50 @@ nav li a:hover {
   background-color: #555;
 }
 
-h1 {
+box {
+   width: 50rem;
+   margin: 1.7rem auto;
+   font-family: 'Inter', sans-serif;
+   font-weight: normal;
+   text-align: center;
 
+ }
+
+h1 span {
+   font-size: 65px;
+   background-color: #000000;
+   padding-bottom: -3.0rem;
+   padding-left: 1.5rem;
+   padding-right: 1.4rem;
+   color: #FFFFFF;
+   text-align: left;
+   font-family: "Times New Roman"
+
+   
+ }
+ 
+ h2 span {
+   font-size: 40px;
+   background-color: #000000;
+   padding-bottom: 0.6rem;
+   padding-left: 1.1rem;
+   color: #FFFFFF;
+   text-align: left;
+   font-family: "Times New Roman"
+
+
+   
+ }
+
+
+h1 {
+   font-family: "Times New Roman";
   font-size: 50px;
   color: #781515
 }
 
 h2 {
-
+   font-family: "Times New Roman";
   font-size: 30px;
   color: #781515;
 }
@@ -59,10 +98,13 @@ h3 {
   color: #615F5F;
 }
 
+
+
 p {
 
   font-size: 22px;
   color: #615F5F;
+  text-align: justify;
 }
 
 a{
@@ -95,7 +137,10 @@ body {
   bottom: 0;
   width: 100%;
 
+
+
 }
+
 
 </style>
 
