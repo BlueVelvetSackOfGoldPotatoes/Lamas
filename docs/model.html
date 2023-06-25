@@ -74,6 +74,9 @@
 <p>Informants get to know the role of one mafia member from the start of the game, which is done in the same way.</p>
 <p>From the start of the game, members of the mafia are aware of who other members are, and doctors are aware of who the other doctors are. They eliminate any accessibility relations from states where a player is in their group, to a state where that player is not in their group.</p>
 <p>During the game, doctors can learn that they managed to protect their target from elimination by the mafia. From this, they conclude that the person they saved cannot be in the mafia, so they eliminate an accessibility relations to states where that player is a mafioso.</p>
+<h3 id="vote-knowledge">Knowledge from previous votes</h3>
+<p>Our implementation stores the players that voted on each mafioso. When a mafioso is revealed, this means that all players now know that people who voted against that mafioso are not mafiosi themselves. Therefore they remove any accessibility relations to states where those people are mafiosi.</p>
+
 
 <!--<h2 id="update-model">Updating the Kripke model</h2>
 <p></p>-->
