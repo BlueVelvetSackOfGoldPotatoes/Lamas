@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<title>LAMAS: Mafia Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+<head>
+<link rel="stylesheet" href="docs/style.css">
+</head>
+
+<style>
+.top-container {
+    padding: 100px;
+    background-image:url('docs/imgs/theme.jpg');
+    /* background-repeat: no-repeat; */
+    background-position: center;
+    background-size: 100%;
+    position: relative;
+    object-fit: fill;
+    width: auto;
+    height: 990px;
+    opacity: 0.85;
+    }
+    
+.middle-container {
+    padding: 50px;
+    background-image: url('docs/imgs/textured_dark.jpg');
+
+    background-size: 160%;
+    position: relative;
+    object-fit: fill;
+    width: auto;
+    height: 1140px;
+    opacity: 0.8;
+
+    }
+   
+    
+    
+.hero {
+    position: relative; 
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+        text-align: center;
+}
+
+.hero::before {    
+      content: "";
+      background-image: url('docs/imgs/about_us.jpg');
+      background-size: cover;
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      bottom: 0px;
+      left: 0px;
+      opacity: 0.35;
+}
+    
+h6 {
+
+   font-family: "Times New Roman";
+  position: relative;
+  color: #000000;  
+  font-size: 55px;
+  height: 10px;
+    width: 100%;
+    top: -50px;
+
+
+}
+
+h7 {
+display: block;
+ position: relative;
+ opacity: 1;
+ margin-bottom: 5px;
+ font-family: "Times New Roman";
+ font-size: 28px;
+ line-height: 34px;
+ top: 167px;
+ left: -510px;
+}
+
+
+h8 {
+display: block;
+ position: relative;
+ opacity: 1;
+ margin-bottom: 5px;
+ font-family: "Times New Roman";
+ font-size: 28px;
+ line-height: 34px;
+ top: 27px;
+ left: 5px;
+ 
+}
+
+
+h9 {
+display: block;
+ position: relative;
+ opacity: 1;
+ margin-bottom: 5px;
+ font-family: "Times New Roman";
+ font-size: 28px;
+ line-height: 34px;
+ top: -114px;
+ left: 500px;
+}
+
+
+.img {
+position: relative;
+
+top: 120px;
+display: inline-flex;
+justify-content: center;
+gap: 250px;
+width: 250px;
+height: 250px;
+}
+
+.item {
+border:8px solid black;
+border-radius: 400px;
+margin: -1px 0 0 -1px;
+}
+   
+    
+    p {
+
+  font-size: 22px;
+  color: #FFFFFF;
+
+}
+
+hr.new4 {
+position: relative;
+    top: 20px;
+  border: 2px solid #781515;
+  
+  width: 150px;
+}
+
+  /* target the element you want the animation on */
+  .my-text {
+    /* add these styles to make the text move smoothly */
+    display: inline-block;
+    animation: slide-right 3.5s ease forwards;
+    opacity:0;
+    animation-delay: 300ms;
+    animation-timing-function: linear;
+      transition: 10s ease-in-out all;
+
+  }
+
+  @keyframes slide-right {
+    /* use % to specify the animation at different stages (in this case, 0% and 100%) */
+    0% {
+	opacity:1;
+      transform: translateX(-100px);
+    }
+
+    20% {
+    	opacity:1;
+      /* adjust the value to control how much the text moves */
+      transform: translateX(0px);
+    }
+    
+    100% {
+    	opacity:1;
+      /* adjust the value to control how much the text moves */
+      transform: translateX(0px);
+    }
+  }
+  
+  
+    /* target the element you want the animation on */
+  .my-text1 {
+    /* add these styles to make the text move smoothly */
+    display: inline-block;
+    animation: slide-right1 0.7s ease forwards;
+    opacity:0;
+    animation-delay: 1100ms;
+    animation-timing-function: linear;
+
+  }
+
+  @keyframes slide-right1 {
+    /* use % to specify the animation at different stages (in this case, 0% and 100%) */
+    0% {
+	opacity:1;
+      transform: translateX(-100px);
+    }
+
+    100% {
+    	opacity:1;
+      /* adjust the value to control how much the text moves */
+      transform: translateX(0px);
+    }
+  }
+
+
+</style>
+
+
+
+
+
+<body>
+
+
+<!-- Sidebar -->
+<nav>
+  <ul>
+    <li><a href="./index.html">Home</a></li>
+    <li><a href="./docs/game.html">Rules of the Game</a></li>
+    <li><a href="./docs/simplifications.html">Simplifications</a></li>
+    <li><a href="./docs/strategies.html">Strategies</a></li>
+    <li><a href="./docs/model.html">Model & Implementation</a></li>
+    <li><a href="./docs/example.html">Illustration</a></li>
+    <li><a href="./docs/results.html">Experiments & Results</a></li>
+    <li><a href="https://github.com/BlueVelvetSackOfGoldPotatoes/Lamas" target="_blank">GitHub</a></li>
+    <li><a href="./docs/refs.html">References</a></li>
+  </ul>
+</nav>
+
+<div class="top-container">
+<div class="title" >
+
+</div>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+  <h1>
+   
+   <span class="my-text">Welcome to </span>
+   </h1>
+   
+     <h1>
+   
+   <span class="my-text">the Thrilling Mafia Game!</span>
+   </h1>
+
+<h2>
+   <span class="my-text1"><font style="color: #E52222">&nbsp Unleash your inner mobster ! &nbsp</font></span> 
+</h2>
+
+<br>
+</div>
+
+
+
+<div class="middle-container">
+<div class="title" >
+
+</div>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+<div class="w3-main" style="margin-left:400px">
+
+  
+    <div class="w3-threequarter w3-container">
+
+<p>This classic party game, also known as Werewolf, is a social deduction game that engages players in a battle of wits, persuasion, and strategy. It's a game of secrecy and subterfuge, where the aim is to unveil hidden identities while keeping your own intentions hidden. The game's flow is guided by a Narrator, who keeps time rolling and serves as a moderator, impartially overseeing the game. Here's a brief introduction before we delve into the logic behind it.</p>
+
+<p>Within Werewolf, two primary teams emerge: the innocent Villagers and the cunning Mafiosi. The thrilling objective for players on both teams is to reveal the identities of their opponents and strategically eliminate them from the game. Throughout the gameplay, players actively participate in voting processes to eliminate suspected individuals and engage in dynamic conversations to exchange knowledge and deduce valuable information about both their allies and adversaries.</p>
+
+<p>Our goal is to model the game of Mafia, analyze its mechanics, and determine the optimal strategies for winning. In the following section titled <a href="./model.html"><font style="color: #E52222">Model & Implementation</font></a>, you will find the specific aspects we implement and further analyze.</p>
+
+
+<p>For our project, we model a simplified version of the Mafia game. If you're new to this captivating game, we invite you to visit the <a href="./game.html"><font style="color: #E52222">Rules of the Game</font></a> page to familiarize yourself with the basic rules and factions. We firmly believe that the Mafia game is well-suited for in-depth analysis using epistemic logic. Specifically, we will formally represent the players, roles, and rules of the game. During the gameplay, significant moments arise when the moderator makes public announcements, revealing the identity of each eliminated player. These announcements ignite intense debates among the surviving players in their quest to uncover the identities of the true Mafia members. </p>
+
+ <p> Other than merely modeling Mafia, we intend to simulate the Mafia’s chance of victory with respect to the total number of players. Previous research studies, referenced in [2], have demonstrated the notable influence of special roles with unique abilities on the game’s dynamics. Furthermore, additional studies have indicated that the parity of the initial number of players also significantly affects the game’s outcome. In this project, we will conduct various experiments and attempt to simulate and analyze the influence of these variations and their corresponding results.</p> 
+ 
+ <p> 
+</div>
+</div>
+</div>
+
+
+<div class="hero">
+<div class="title" >
+
+</div>
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+
+
+  
+    <div class="w3-threequarter w3-container">
+
+
+<center>
+<h6> <b>ABOUT US</b></h6>
+<hr class="new4">
+
+
+
+<div class ="img">
+<img class="item" src="docs/imgs/member1.png">
+<img class="item" src="docs/imgs/member3.png">
+<img class="item" src="docs/imgs/member2.png">
+
+</div>
+
+</center>
+<h7 class="group-member-name"><b>C.M. Nampouri (s4721810) <br> c.m.nampouri@student.rug.nl <br> Faculty of Science and Engineering <br> University of Groningen</b> </h7>
+
+<h8 class="group-member-name"><b>D. Windt (s3486427) <br> d.windt@student.rug.nl <br> Faculty of Science and Engineering <br> University of Groningen</b>  </h8>
+
+
+<h9 class="group-member-name"><b>G. Hora de Carvalho (s3450295) <br> g.hora.de.carvalho@student.rug.nl <br> Faculty of Science and Engineering <br> University of Groningen</b></h9>
+
+</div>
+
+</div>
+
+  
+  <footer id="footer">
+
+    <div class="w3-container w3-theme-l1 w3-padding-20">
+    <br>
+
+          <h4>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp  This page was generated by <mark class="red">GitHub Pages. </mark> </h4>
+    </div>
+   
+  </footer>
+
+</body>
+</html>
+
